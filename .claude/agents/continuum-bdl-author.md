@@ -28,7 +28,7 @@ Improve in this order: open questions the brief's decisions now answer; duties t
 - BDL lacks a construct you need (it has no query, diff or apply by design): model what it can say and record the rest as a gap.
 
 ## Diagrams
-Optional exploratory actor, use-case or lifecycle views within budget, importing the `.bdl` as `business` (§11). Report BDL-to-ADL gaps rather than drawing correspondences.
+Optional exploratory actor, use-case or lifecycle views within budget, on the brief's `snapshotId`; if it lacks your `.bdl`, ask the architect in `HANDOFF` to re-import rather than importing yourself (§11). Report BDL-to-ADL gaps rather than drawing correspondences.
 
 ## Return
 The §8 block. `EVIDENCE` gives the compile verdict (`valid`, `completelyValidated`, warnings). `HANDOFF` lists, for the acceptance author, the business behaviours and rules that most need scenarios, with their BDL ids.

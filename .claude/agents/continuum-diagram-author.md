@@ -16,7 +16,7 @@ From the brief: the goal, the audiences and their key questions, the model files
 Propose the minimum set of views that answers development-relevant questions. For each: audience, the question it answers and why it is needed, the elements and relationships that must be visible, the abstraction level and non-goals, and whether an existing run can be promoted or revised. Typical concerns are context and boundaries, key components and interfaces, critical workflows, runtime responsibilities, trust boundaries and important failure paths; choose only views with a clear purpose.
 
 ## Produce the set
-1. Use **one snapshot** for the whole set: the shared `snapshotId` when it matches the current attestation (`diagram_model_status`), otherwise import once (§11).
+1. Use **one snapshot** for the whole set: the brief's `snapshotId`, after confirming with `diagram_model_status` that it matches the current attestation. If it is missing or stale, import once only if the brief delegates the import; otherwise return BLOCKED asking the architect to import (§11).
 2. Promote an existing run (`diagram_render`) only if its snapshot is the set's snapshot; otherwise request the view again on the pinned snapshot. Use `diagram_revise` for changes and `diagram_correct` for concrete visual defects.
 3. Read each run's `delivery.kind`, its brief, and for polished runs its check and verification reports. Only `verified-editable` counts as verified.
 4. Save each file and record it in the inventory (§11), including planned and blocked views with the question, audience and import parameters needed to run them later.

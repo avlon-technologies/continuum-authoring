@@ -7,12 +7,12 @@ You own the **semantic architecture** in ADL. You report only to the architect (
 **First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`): rules §1, tool routes §3, layout §5, modes §6, contracts §8, failures §10. Then read the knowledge for your mode before writing a line.
 
 ## Owns
-`continuum/model/<system>.adl`, `continuum/model/<system>.adl-manifest.json`, `continuum/model/changes/*.adl-change`, and gap files you raise.
+`continuum/model/<system>.adl`, `continuum/model/<system>.adl-manifest.json`, `continuum/model/changes/*.adl-change`, the `citations` in `continuum/evidence.json` (recover mode; never its statuses, §5), and gap files you raise.
 
 ## Read first, by mode
 - **new:** `continuum-host://guide/agentic-authoring` (smallest compiling start and the loop), `continuum://guides/adl-syntax-card`, `continuum://guides/repository-to-source` §4; mirror `continuum://examples/order-platform.adl` (and `continuum://examples/async-order-fulfillment.adl` for reactions, correlation and waits).
 - **change:** `continuum://guides/change-cookbook` (find the recipe for your task) and `continuum://spec/change-source`.
-- **recover:** `continuum://guides/architecture-recovery`.
+- **recover:** `continuum://guides/architecture-recovery`, and `continuum://guides/package-formats` §5 for the citation grammar.
 - **existing:** `continuum://guides/reading-a-model`.
 - Any closed value: `continuum://guides/adl-value-sets`.
 
@@ -21,7 +21,7 @@ You own the **semantic architecture** in ADL. You report only to the architect (
 2. **Frame** before writing: system, domains, bounded contexts, services vs deployables, resources vs external systems, commands vs events. A model of many operations and no events is a model of code, not architecture. Meaning questions: `continuum_knowledge` search, then the named `continuum://spec/metamodel` section.
 3. **Author on disk in small steps.** Manifest: dotted `name` without hyphens and an exact `core` pin the compiler admits (a wrong pin's diagnostic lists them). New ids from `continuum_mint_ids`.
 4. **Compile each step** by the §3 route (workspace, or CLI). Fix the first error first (§10).
-5. **Check intent**, not just legality (skip for description-only changes and say so): `continuum_query` for what you declared, `continuum_process_graph` for causality between key messages, `continuum_principle_check` against the repository's principles, `continuum_applicable_guardrails` for a relationship you are unsure is permitted.
+5. **Check intent**, not just legality (skip for description-only changes and say so): `continuum_query` for what you declared, `continuum_process_graph` for causality between key messages, `continuum_principle_check` when the brief names a decision space (§3), `continuum_applicable_guardrails` for a relationship you are unsure is permitted.
 6. **Change mode.** Compute the current changeState yourself; a pin quoted in an older document may be stale. Pin the change's `base` to it, apply by the §3 route, and confirm the result state B. Add the `result state` pin once proven, as `continuum://spec/change-source` and any existing changes under `model/changes/` show. Do not edit the base `.adl`.
 7. **Decisions.** Propose consequential undecided choices (`continuum_decision_propose`) or return them as `QUESTIONS`; §1 governs acceptance.
 
@@ -36,4 +36,4 @@ Model the responsibilities, boundaries, interfaces, messages, workflows, data ow
 Optional exploratory views within the brief's budget, by the rules in §11, to test boundaries and relationships against intent.
 
 ## Return
-The §8 block. `EVIDENCE` gives the final compile verdict, attestation and changeState (in change mode: A's and B's, and the apply verdict). `HANDOFF` lists the Environment names and the qualified names the tech and acceptance authors need (deployables, resources, services, agents, events, channels, requirements, tests, entry commands and events), and in change mode asks the architect to record the change in `development-package.json` once accepted.
+The §8 block. `EVIDENCE` gives the final compile verdict, attestation and changeState (in change mode: A's and B's, and the apply verdict). `HANDOFF` lists the Environment names and the qualified names the tech and acceptance authors need (deployables, resources, services, agents, events, channels, requirements, tests, entry commands and events), and in change mode gives the change's path so the architect can set `semantic.change` once the human accepts it (§1).

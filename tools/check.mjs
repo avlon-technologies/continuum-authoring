@@ -44,7 +44,7 @@ for (const f of docs) {
   for (const m of text[f].matchAll(/§(\d+)(?![.\d])/g)) {
     // References into Continuum guides ("package-formats §2") are not skill sections.
     const before = text[f].slice(Math.max(0, m.index - 60), m.index);
-    if (/continuum(-host|-mcp)?:\/\/\S+\s*$/.test(before) || /`[^`]*\.(md|json)`\s*$/.test(before)) continue;
+    if (/continuum(-host|-mcp)?:\/\/\S+\s*(§\d+(\.\d+)?\s*(–|-|,|and)\s*)*$/.test(before) || /`[^`]*\.(md|json)`\s*$/.test(before)) continue;
     if (!sections.has(m[1])) fail(f, `§${m[1]} is not a section of the skill`);
   }
 }

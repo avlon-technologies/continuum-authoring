@@ -21,11 +21,15 @@ The specifications, guides and worked examples are served by the Continuum MCP s
 |---|---|---|
 | [Claude Code](https://claude.com/claude-code) | everything | install it |
 | **Continuum access** | both MCP servers | access is **by invitation** during the preview: [open an issue titled "Access request"](https://github.com/avlon-technologies/continuum-authoring/issues/new?title=Access%20request) |
-| Continuum MCP server | authoring and compiling ADL and BDL, knowledge | `https://mcp.continuum.dev.avlon.ca/mcp` (production) |
-| Continuum Diagram server | diagrams | `https://diagram.continuum.dev.avlon.ca/mcp` (production) |
+| Continuum MCP server | authoring and compiling ADL and BDL, knowledge | `https://mcp.continuum.dev.avlon.ca/mcp` |
+| Continuum Diagram server | diagrams | `https://diagram.continuum.dev.avlon.ca/mcp` |
 | `continuum` CLI (optional) | building and checking the development package | not publicly distributed yet |
 
-**Cost.** Continuum is a free preview. Usage is rate-limited: notably, the Diagram server keeps at most 16 live model snapshots per account, with no delete; they expire on their own. The agents share one snapshot per model revision and reuse diagram runs to stay within the limit. Claude Code usage is billed by Anthropic as usual.
+Despite the `dev` in their names, these hostnames are the production preview service.
+
+**Cost.** Continuum is a free preview. Usage is rate-limited: notably, the Diagram server keeps at most 16 live model snapshots per account, with no delete; each expires after 24 hours. The coordinator imports one snapshot per model revision and the agents reuse diagram runs to stay within the limit.
+
+**Your data.** The Continuum servers are hosted by Avlon. Whatever the agents send to them is processed there: model and business documents, bindings, and architecture recovered from your code (file paths and line ranges, and any code an agent quotes). Workspaces and snapshots are temporary. Do not use the servers for a repository whose architecture you may not share with a third party. Claude Code usage is billed by Anthropic as usual.
 
 ### What you get with and without the CLI
 
@@ -52,7 +56,7 @@ The agents tell you at the start which route you are on, and they never claim a 
    claude mcp add --transport http continuum-diagram https://diagram.continuum.dev.avlon.ca/mcp
    ```
 
-   Start Claude Code, run `/mcp`, and sign in to each server with the account you were invited with.
+   Start Claude Code, run `/mcp`, choose each server and sign in in the browser window it opens (OAuth), with the account you were invited with. Until your invitation is active, sign-in or the first tool call is refused.
 
 2. **Add the agents and skill to your project:**
 
@@ -69,12 +73,12 @@ The agents tell you at the start which route you are on, and they never claim a 
    ```json
    {
      "permissions": {
-       "allow": ["mcp__continuum", "mcp__continuum-diagram", "Bash(continuum:*)", "Bash(base64:*)"]
+       "allow": ["mcp__continuum", "mcp__continuum-diagram", "Bash(continuum:*)", "Bash(base64:*)", "Bash(curl:*)"]
      }
    }
    ```
 
-   The server names must match the names you used in step 1. File edits are still confirmed, and the agents write only under `continuum/`.
+   The server names must match the names you used in step 1. `curl` saves diagram images from their signed links. File edits are still confirmed. The agents are instructed to write only under `continuum/`, but that is an instruction, not an enforced limit; only the researcher has a restricted tool list (read and web tools).
 
 ## Usage
 
@@ -115,13 +119,13 @@ All of them follow one shared protocol, the [`continuum-authoring` skill](.claud
 ## Known limitations
 
 - Binding validation, scenario validation and the package build need the CLI, which is not public yet; MCP-only sessions stop at **Authored — package UNVERIFIED**.
-- The Diagram server's snapshot limit (16 live per account, no delete) can block new diagrams until older snapshots expire; the agents report this and record the planned views.
+- The Diagram server's snapshot limit (16 live per account, no delete, 24-hour expiry) can block new diagrams until older snapshots expire; the agents report this and record the planned views.
 - MCP workspaces are temporary; the agents keep files on disk as the source of truth and re-create a workspace when it expires.
 - The agents produce architecture, not code, and their judgments of quality and fitness are reasoning, not proof. Only the compilers' verdicts are proof, and only of legality.
 
 ## Maintaining this repository
 
-`node tools/check.mjs` checks that the agents, the skill and the README agree: agent names and tables, section references, return-contract fields, links, and known-stale terms. It also checks every Continuum tool name and knowledge URI cited against `tools/surface.json`, a snapshot of the live servers. CI runs it on every push. Refresh the snapshot when the servers change (instructions in that file).
+`node tools/check.mjs` checks that the agents, the skill and the README agree: agent names and tables, section references, return-contract fields, links, and known-stale terms. It also checks every Continuum tool name and knowledge URI cited against `tools/surface.json`, a snapshot of the live servers. CI runs it on every push. It cannot see the live servers, so before each release refresh that snapshot against them (instructions in the file) and update its `verified` date. The checks catch renamed or removed references, not contradictions in meaning; review those by reading.
 
 ## License
 

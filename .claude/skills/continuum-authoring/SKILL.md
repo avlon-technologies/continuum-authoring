@@ -15,7 +15,7 @@ Every continuum-* agent reads this file first (at `.claude/skills/continuum-auth
 - **Never claim a check that did not run.** If it cannot run, the result is **NOT CHECKED** and the artifact **UNVERIFIED**.
 - **Authority rule.** Agents *propose* decisions (`continuum_decision_propose`). Accepting, rejecting, superseding or delegating a decision is the human's act, unless current Host policy explicitly authorizes that action and scope for an agent; even then only the architect performs it, tells the human, and cites the policy. Accepting a package state (a lifecycle transition) is always the human's. Never present a proposal as accepted.
 - **Do not implement application code.** The deliverable is the development package.
-- **One writer per file** (§5). Ownership restricts writes, not critique.
+- **One writer per file** (§5). Ownership restricts writes, not critique. The one exception: the architect applies `GAP-UPDATES` to gap files other agents raised.
 
 ## 2. Team, communication and delegation
 
@@ -42,11 +42,11 @@ The Continuum MCP server is the primary route and needs nothing installed. The `
 |---|---|---|---|
 | Read knowledge | `continuum_knowledge` (`index` / `search` / `read` + `section`) | — | verified |
 | Draft and compile ADL | `continuum_workspace_create` (manifest + documents as **plain text**), `continuum_workspace_edit`, `continuum_workspace_compile` | `continuum compile <manifest> --state --json` | verified |
-| Query, inspect, causality, behaviour preview | `continuum_query`, `continuum_process_graph`, `continuum_preview` with `workspace: <workspaceId>`; `continuum_workspace_inspect`, `_gaps` | `continuum preview` | query verified; others accept `workspace` |
+| Query, inspect, causality, behaviour preview | `continuum_query`, `continuum_process_graph`, `continuum_preview` with `workspace: <workspaceId>`; `continuum_workspace_inspect`, `_gaps` | `continuum preview` | query verified; the others take `workspace` in their schemas but were not exercised |
 | Validate and apply an `.adl-change` | `continuum_apply` with `workspace: <model's workspaceId>`, `manifestPath`, `changePath`, and `files: { "<change>.adl-change": <base64 of that one small file> }` | `continuum apply <manifest> <change> --emit-source <dir>` | verified (apply → `applied`, base and result state) |
 | Compile and inspect BDL | `continuum_workspace_edit` `create-document` `<name>.bdl` into a workspace, then `continuum_business_compile` / `_inspect` with `workspace` and `artifact: "<name>.bdl"` | `continuum business compile\|inspect <file>` | verified |
 | Current lifecycle state | read `continuum/ledger.json` (its `current` entry: changeState, attestation, bindings) from disk | `continuum status` | file read |
-| Decisions | `continuum_decision_list` / `_show` / `_propose` (others need §1 authority) | — | tools present |
+| Decisions and principles | `continuum_decision_list` / `_show` / `_propose` (others need §1 authority); `continuum_principle_list` / `_show` / `_check` — all take the decision `space` (from `continuum_decision_list` or the brief) and, for `_check`, a `decision` or `scope` | — | tools present, not exercised; with no decision space, say so and skip |
 | Diagrams | Continuum Diagram server (§11) | — | verified (subject to the snapshot quota) |
 | Bindings: create, pin, validate | **none on the Architect server.** Partial check: `diagram_model_import` with `bindings` compiles them against the model (per its tool contract; not exercised 2026-11-12 because of the snapshot quota) | `continuum package realize`, `bind refresh`, `build` | **platform gap** |
 | Acceptance scenarios: validate | **none.** Each reference can be confirmed with `continuum_query` against the model's workspace | `continuum package build` | **platform gap** |
@@ -55,7 +55,7 @@ The Continuum MCP server is the primary route and needs nothing installed. The `
 
 **Rules for the MCP route.**
 - Keep files on disk as the source of truth; a workspace is a scratchpad that can vanish (it reports `lifecycle`). Re-create it from disk when lost.
-- **Never put a model document in base64.** ADL and BDL go into a workspace as plain text. Base64 `files` are only for small single files a tool cannot take from a workspace (an `.adl-change`). Produce base64 with a shell command (`base64 -w0 <file>`), never by retyping. Do not create an `.adl-change` *inside* a workspace: it is added to the manifest as an ADL document and breaks the compile.
+- **Never put a model document in base64.** ADL and BDL go into a workspace as plain text. Base64 `files` are only for small single files a tool cannot take from a workspace (an `.adl-change`). Produce base64 with a shell command that works on Linux and macOS (`base64 < <file> | tr -d '\n'`), never by retyping. Do not create an `.adl-change` *inside* a workspace: it is added to the manifest as an ADL document and breaks the compile.
 - When a call fails with errors unrelated to your work (unresolved base, errors in untouched code), suspect the payload before the model.
 
 **What MCP alone can deliver** (the server's own statement): a compiled, attested ADL model and a compiled BDL model, plus binding and scenario drafts labelled **UNVERIFIED**, handed to someone with the CLI to build. Say exactly that; see the readiness levels in §9.
@@ -98,20 +98,21 @@ continuum/
     <vocab>.vocabulary-claims.json    tech-author        one per vocabulary
     <system>.bdl                      bdl-author         one document, no manifest
     <system>.realization.json         bdl-author         only when the correspondence is authored
+  evidence.json                       adl-author         recover mode: `citations` only (package-formats §5);
+                                                         statuses are awarded by `continuum evidence refresh`, never authored
   acceptance/scenarios/<name>.scenario.json   acceptance-author
   diagrams/README.md, diagrams/<nn>-<slug>.*  diagram-author   inventory and delivered files
   gaps/<yyyy-mm-dd>-<slug>.md         whoever finds it   the architect triages and applies GAP-UPDATES
-  decisions/                          Host / human       proposed via tools; see §1 authority rule
   ledger.json, history/, transitions/ lifecycle          read-only for agents
   IMPLEMENTATION.md, BEHAVIOUR.md, README.md, PACKAGE.json, model/*.adl.txt,
   model/compile-proof.json, acceptance/README.md, acceptance/traces/ ...   DERIVED by package build
 ```
 
-`acceptance/adapter.mjs` belongs to the implementation.
+`acceptance/adapter.mjs` belongs to the implementation. Decisions live in the Continuum Host, not in files: agents propose them with tools (§1) and never write a `decisions/` directory.
 
 **Lifecycle.** Read `ledger.json` (or `continuum status`) before changing anything. If the ledger records an adopted change, its result is the current state. Editing authored files after acceptance makes the package drift from the accepted checkpoint; that is expected while authoring, and accepting the new state is the human's lifecycle act (`continuum://guides/development-workflow`).
 
-**Building.** `continuum package build` rewrites DERIVED files in place and has no `--out`. Only the architect builds in place, after a round of specialists has returned. A specialist needing a build verdict copies `continuum/` to a scratch directory outside the repository and builds the copy. Specialists may run in parallel: a check that fails because of another owner's file is reported as theirs, not fixed.
+**Building.** `continuum package build` rewrites DERIVED files in place (in change mode, when `development-package.json` names `semantic.change`, it requires `--out`; package-formats §1). Only the architect builds in place, after a round of specialists has returned. A specialist needing a build verdict copies `continuum/` to a scratch directory outside the repository and builds the copy. Specialists may run in parallel: a check that fails because of another owner's file is reported as theirs, not fixed.
 
 ## 6. Modes
 
@@ -120,7 +121,7 @@ continuum/
 | **new** | goal, requirements, no model | author from the smallest compiling start | ids from `continuum_mint_ids` |
 | **existing** | a model in `continuum/model/` (including one whose last change was adopted) | none, or gap-filling edits | preserve every id; current state = adopted result |
 | **change** | existing model + requested change | `model/changes/<name>.adl-change` pinned to the current changeState | prove apply → B (§3); downstream artifacts target B |
-| **recover** | code, no model | evidence-backed recovery | cite evidence; unknown is a gap |
+| **recover** | code, no model | evidence-backed recovery | citations in `evidence.json` (§5); unknown is a gap |
 
 ## 7. Experience-first discovery and research
 
@@ -136,7 +137,7 @@ Brief `continuum-researcher` only when dated external evidence could materially 
 Mode:           new | existing | change | recover
 Goal:           one or two sentences of the human's goal
 Repository:     absolute path; package root
-State:          changeState / attestation (or "none yet"); whether an accepted checkpoint exists
+State:          changeState / attestation (or "none yet"); whether an accepted checkpoint exists; diagram snapshotId
 Route:          MCP only | MCP + CLI (which §3 rows are available)
 You own:        exact files you may create or edit, at their real paths
 Read-only:      files you may read but not change
@@ -147,6 +148,8 @@ Budget:         e.g. "at most 2 exploratory diagrams", "no package build"
 ```
 
 A **research brief** replaces `Task` with: `Decision:` the bounded question; `Alternatives:` including the simplest or do-nothing; `Constraints:`; `Sources:` acceptable kinds; `Stop when:` the stopping condition or time budget.
+
+A **review brief** (the independent developer-readiness review, §9 step 6) goes to a fresh `general-purpose` agent, never to an author: `Read only:` `GOAL.md` and the `continuum/` package; `Task:` explain the key journeys and behaviour as a developer would, then name the top three decisions you would still have to invent and anything contradictory; `Out of scope:` editing any file, reading the session's other output. It returns the explanation before the §8 block, with `CHANGED: none`, the invented decisions under `GAPS` and the contradictions under `CHALLENGE`.
 
 If a needed field is missing, make the most conservative assumption, record it under `ASSUMPTIONS`, and continue.
 
@@ -166,7 +169,7 @@ CHALLENGE:   the most important assumption, omission or simpler option, with evi
 HANDOFF:     what the next specialist or the architect needs (ids, names, files, rebuild needed)
 ```
 
-**Gap files.** Write `gaps/<yyyy-mm-dd>-<slug>.md` only when the gap blocks implementation, needs a human decision, or will outlive the session; otherwise list it under `GAPS`. Shape: a title stating the fact the model does not settle; a line with date, raised by, status (`open` or `resolved <date> (<disposition>)`) and what it blocks; then sections *Evidence* (paths with line ranges, tool verdicts), *Options* (consequence of each; the smallest change that closes it and the state it pins) and *Recommendation*.
+**Gap files.** Write `gaps/<yyyy-mm-dd>-<slug>.md` only when the gap blocks implementation, needs a human decision, or will outlive the session; otherwise list it under `GAPS`. Shape: a title stating the fact the model does not settle; a line with date, raised by, status (one of the `GAPS` states above, or `resolved <date> (<disposition>)`) and what it blocks; then sections *Evidence* (paths with line ranges, tool verdicts), *Options* (consequence of each; the smallest change that closes it and the state it pins) and *Recommendation*.
 
 ## 9. Protocol and readiness
 
@@ -175,7 +178,7 @@ HANDOFF:     what the next specialist or the architect needs (ids, names, files,
 3. **Trace** goal → journey → ADL element → binding → scenario; every missing link is a gap.
 4. **Author in small compiled steps** by the routes in §3. ADL anchors the pins downstream, but BDL discoveries, early scenarios and exploratory diagrams may challenge it before it stabilizes. Re-pin affected artifacts after every model change.
 5. **Package** with the CLI when available (architect only, §5).
-6. **Independent developer-readiness review.** A fresh-context agent that authored nothing reads only `GOAL.md` and the package, explains the key journeys and behaviour, and names the top three decisions it would still have to invent. Route material gaps to owners and review again. Without a separate context, label it SELF-REVIEW.
+6. **Independent developer-readiness review** (review brief, §8). A fresh-context agent that authored nothing reads only `GOAL.md` and the package, explains the key journeys and behaviour, and names the top three decisions it would still have to invent. Route material gaps to owners and review again. Without a separate context, label it SELF-REVIEW.
 7. **Report** every artifact as PASS / PARTIAL / BLOCKED / NOT CHECKED with its evidence.
 
 **Readiness levels** — the single definition of done:
@@ -211,8 +214,8 @@ HANDOFF:     what the next specialist or the architect needs (ids, names, files,
 The Continuum Diagram server's tool descriptions are the procedure: how to import a model, ask a question (a convention such as "a C2 of…" belongs in the question), poll, revise, render and correct. Follow them. This section adds only what this team needs.
 
 - **Who draws.** Any author may request exploratory views as feedback, within the brief's budget. `continuum-diagram-author` owns the final set. The architect shows results to the human.
-- **One snapshot per model revision.** The architect or the first author to import shares the `snapshotId`; re-import only after the model changes. The server caps live snapshots per account and has no delete. Import paths are relative to the manifest exactly as the manifest names them; attach `bindings` only when their `base.canonicalModel` equals the current attestation.
+- **One snapshot per revision, imported by the architect.** Only the architect calls `diagram_model_import` (or an agent whose brief explicitly delegates it). One import per revision carries the manifest, the `bindings` whose `base.canonicalModel` equals the current attestation, and the `.bdl` as `business` when there is one; its `snapshotId` goes in every brief's `State`. Re-import only when the ADL, a binding or the BDL changes. The server keeps at most 16 live snapshots per account for 24 hours and has no delete. Import paths are relative to the manifest exactly as the manifest names them. An import that refuses a binding is evidence for the tech author (§3).
 - **Label honestly.** Present each picture as its `delivery.kind` says. Only `verified-editable` is a verified deliverable; a provisional proposal is for reaction, and a failed verification is diagnostic.
-- **Save, then return.** Save the PNG from its signed link (`curl -o continuum/diagrams/<nn>-<slug>.png "<link>"`) and SVG or reports from `diagram_artifact`, and return them in `DIAGRAMS` (§8). The **architect** views a run itself (`diagram_status` returns the image to the caller) and gives the human the saved path and signed link; a picture a subagent received is not visible to the human.
+- **Save, then return.** Save the PNG from its signed link as soon as the run finishes, since signed links expire (`curl -o continuum/diagrams/<nn>-<slug>.png "<link>"`; if it has expired, re-read the run with `diagram_status` and use the link it returns) and SVG or reports from `diagram_artifact`, and return them in `DIAGRAMS` (§8). The **architect** views a run itself (`diagram_status` returns the image to the caller) and gives the human the saved path and signed link; a picture a subagent received is not visible to the human.
 - **No invented facts.** A diagram cannot make undeclared architecture true; report the missing semantics as a gap for its owner. Never substitute Mermaid, hand-drawn SVG or a generic image generator for a Continuum diagram unless the human explicitly asks.
 - **Cost.** Image runs are rate-limited work on a free preview; reuse and revise runs rather than re-rendering, and never duplicate a render another agent already made.
