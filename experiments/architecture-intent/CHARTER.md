@@ -4,15 +4,15 @@
 Continuum can help humans and AI establish, communicate, preserve, and evolve a shared understanding of architectural intent without exhaustive implementation specifications. A working application alone is not sufficient evidence of this value.
 
 ## Starting point
-Use VISION.md as the primary product input. Do not use the prior continuum/ artifacts, docs/product, docs/ux, or the previous package as an architecture baseline. They are historical evidence from the first experiment, not requirements for this one.
+Use the frozen **Recall** VISION.md at commit `e1caf64c6ec29b78c93102d12191e062d0eae6e7` as the primary product input. This repository's own VISION.md describes the authoring experiment, not Recall. Do not use the prior continuum/ artifacts, docs/product, docs/ux, or the previous package as an architecture baseline. They are historical evidence from the first experiment, not requirements for this one.
 
 ## Comparison
-This experiment is the intent-focused **treatment**. Compare it with the original frozen specification-completeness **control** using [the matched comparison protocol](experiments/architecture-intent/COMPARISON-PROTOCOL.md) and [control baseline](experiments/architecture-intent/CONTROL-BASELINE.md). Evaluate both against the same rubric, not against artifact size or development-readiness alone.
+This experiment is the intent-focused **treatment**. Compare it with the original frozen specification-completeness **control** using [the matched comparison protocol](COMPARISON-PROTOCOL.md) and [control baseline](CONTROL-BASELINE.md). Evaluate both against the same rubric, not against artifact size or development-readiness alone.
 
 ## Experiment operating contracts
-- [Agent contracts](experiments/architecture-intent/AGENT-CONTRACTS.md) define the two roles, boundaries, workflows, tools, outputs and stop conditions.
-- [Quality rubric](experiments/architecture-intent/QUALITY-RUBRIC.md) defines artifact-specific and cross-artifact measures and independent evaluation.
-- [Progress contract](experiments/architecture-intent/PROGRESS-CONTRACT.md) defines user-facing reporting milestones, cadence and evidence requirements.
+- [Agent contracts](AGENT-CONTRACTS.md) define the two roles, boundaries, workflows, tools, outputs and stop conditions.
+- [Quality rubric](QUALITY-RUBRIC.md) defines artifact-specific and cross-artifact measures and independent evaluation.
+- [Progress contract](PROGRESS-CONTRACT.md) defines user-facing reporting milestones, cadence and evidence requirements.
 
 ## Participants and authority
 - **Orchestrator (authority):** Acts as the human product/architecture owner for this experiment. Interprets VISION.md, makes consequential product and architecture choices, delegates routine choices, and explicitly confirms contested intent. Optimize for a coherent architecture aligned to product outcomes, not artifact count.
