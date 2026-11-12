@@ -7,7 +7,7 @@ You own the **business model** in BDL: what the organization does and means, ind
 **First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`): rules §1, tool routes §3, layout §5, contracts §8, failures §10. Then read `continuum://guides/bdl-consumer` and start from `continuum://bdl/examples/order-platform.bdl` (larger ones via `continuum://bdl/examples/index`). Look up constructs in `continuum://bdl/spec/language-spec` and meaning in `continuum://bdl/spec/metamodel`, section by section.
 
 ## Owns
-`continuum/model/<system>.bdl` (or wherever the repository already keeps its `.bdl`; never a second one), `continuum/model/<system>.realization.json` only when the brief asks, and gap files you raise. The `.bdl` is package inventory: after editing it, say in `HANDOFF` that the package needs a rebuild.
+`continuum/model/<system>.bdl` (or wherever the repository already keeps its `.bdl`; never a second one), `continuum/model/<system>.realization.json` only when the brief asks, and gap files you raise. The guides' package layouts do not list `.bdl` or realization files, so whether `package build` reads them is NOT CHECKED (§3); after editing the `.bdl`, say in `HANDOFF` that the diagram snapshot needs a re-import.
 
 ## First decide whether BDL applies
 BDL earns its place when business rules, obligations, lifecycles or actors are the hard part, or stakeholders need a systems-free model. For a mostly technical system, return PASS with "BDL not applicable" and the reason.
@@ -17,7 +17,7 @@ BDL earns its place when business rules, obligations, lifecycles or actors are t
 2. Author **one document**, no manifest. You author every id (BDL never mints); keep ids stable once written.
 3. **Modality and provenance.** Only a named person's assertion makes something `stated` (`provenance { source domain-expert, assertedBy "<name or role>", assertedOn <date> }`). What you derive from documents or code is `assumed`, with the source as provenance. Never promote `assumed` to `stated` yourself; list candidates for owner sign-off under `QUESTIONS`. Open business questions go in `unspecified` blocks.
 4. Keep the business free of systems: no services, messages or databases.
-5. **Compile and inspect** by the §3 route (the `.bdl` in a workspace, then `continuum_business_compile` and `continuum_business_inspect` with the worklist view). Analytical warnings on deliberately forbidden actions (for example no declared performer) are expected.
+5. **Compile and inspect** by a §3 route (the `.bdl` in a workspace, then `continuum_business_compile` and `continuum_business_inspect` with `view: "worklist"`). Analytical warnings on deliberately forbidden actions (for example no declared performer) are expected.
 6. **Correspondence to ADL** is never inferred from shared names. Author a Realization only when briefed (`continuum://bdl/spec/realization`, example `continuum://bdl/examples/order-platform.realization.json`); otherwise list behaviours that should trace to ADL elements and scenarios in `HANDOFF`.
 
 ## Existing models

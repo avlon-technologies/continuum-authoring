@@ -1,29 +1,70 @@
 {
-  "about": "Snapshot of the live Continuum server surface that this repository's agents cite. tools/check.mjs fails when a cited tool name or knowledge URI is not listed here. Refresh it when the servers change: in Claude Code with both servers connected, list the tools whose names start with continuum_ and diagram_, and run continuum_knowledge with mode \"index\"; replace the lists below and update verified.",
+  "about": "Snapshot of the live Continuum server surface that this repository's agents cite. tools/check.mjs (static) fails when a cited tool, knowledge URI, guide section or quoted limit disagrees with this file. This file is refreshed by the live procedure in tools/LIVE-CHECKS.md; update verified when you do.",
   "verified": "2026-11-12",
   "servers": {
     "continuum": "https://mcp.continuum.dev.avlon.ca/mcp",
     "continuum-diagram": "https://diagram.continuum.dev.avlon.ca/mcp"
   },
   "tools": [
-    "continuum_applicable_guardrails", "continuum_apply", "continuum_assess_model",
-    "continuum_business_compile", "continuum_business_emit", "continuum_business_inspect",
-    "continuum_business_parse", "continuum_business_text_projection", "continuum_compile",
-    "continuum_decision_accept", "continuum_decision_evidence", "continuum_decision_list",
-    "continuum_decision_propose", "continuum_decision_reject", "continuum_decision_revoke",
-    "continuum_decision_show", "continuum_decision_supersede", "continuum_diagnostics",
-    "continuum_diff", "continuum_emit", "continuum_exception_propose", "continuum_exception_show",
-    "continuum_guard", "continuum_icp_check", "continuum_icp_state", "continuum_knowledge",
-    "continuum_ledger", "continuum_mint_ids", "continuum_package_check", "continuum_preview",
-    "continuum_principle_check", "continuum_principle_list", "continuum_principle_show",
-    "continuum_process_graph", "continuum_query", "continuum_reconcile", "continuum_resolve_state",
-    "continuum_text_projection", "continuum_workflow_verify", "continuum_workspace_compile",
-    "continuum_workspace_create", "continuum_workspace_discard", "continuum_workspace_edit",
-    "continuum_workspace_export", "continuum_workspace_gaps", "continuum_workspace_inspect",
+    "continuum_applicable_guardrails",
+    "continuum_apply",
+    "continuum_assess_model",
+    "continuum_business_compile",
+    "continuum_business_emit",
+    "continuum_business_inspect",
+    "continuum_business_parse",
+    "continuum_business_text_projection",
+    "continuum_compile",
+    "continuum_decision_accept",
+    "continuum_decision_evidence",
+    "continuum_decision_list",
+    "continuum_decision_propose",
+    "continuum_decision_reject",
+    "continuum_decision_revoke",
+    "continuum_decision_show",
+    "continuum_decision_supersede",
+    "continuum_diagnostics",
+    "continuum_diff",
+    "continuum_emit",
+    "continuum_exception_propose",
+    "continuum_exception_show",
+    "continuum_guard",
+    "continuum_icp_check",
+    "continuum_icp_state",
+    "continuum_knowledge",
+    "continuum_ledger",
+    "continuum_mint_ids",
+    "continuum_package_check",
+    "continuum_preview",
+    "continuum_principle_check",
+    "continuum_principle_list",
+    "continuum_principle_show",
+    "continuum_process_graph",
+    "continuum_query",
+    "continuum_reconcile",
+    "continuum_resolve_state",
+    "continuum_text_projection",
+    "continuum_workflow_verify",
+    "continuum_workspace_compile",
+    "continuum_workspace_create",
+    "continuum_workspace_discard",
+    "continuum_workspace_edit",
+    "continuum_workspace_export",
+    "continuum_workspace_gaps",
+    "continuum_workspace_inspect",
     "continuum_workspace_read",
-    "diagram_artifact", "diagram_correct", "diagram_model_import", "diagram_model_status",
-    "diagram_model_upload_begin", "diagram_model_upload_chunk", "diagram_model_upload_finish",
-    "diagram_models", "diagram_render", "diagram_request", "diagram_revise", "diagram_runs",
+    "diagram_artifact",
+    "diagram_correct",
+    "diagram_model_import",
+    "diagram_model_status",
+    "diagram_model_upload_begin",
+    "diagram_model_upload_chunk",
+    "diagram_model_upload_finish",
+    "diagram_models",
+    "diagram_render",
+    "diagram_request",
+    "diagram_revise",
+    "diagram_runs",
     "diagram_status"
   ],
   "uris": [
@@ -33,6 +74,7 @@
     "continuum://guides/adl-syntax-card",
     "continuum://guides/adl-value-sets",
     "continuum://guides/architecture-recovery",
+    "continuum://guides/atlas-viewpoints",
     "continuum://guides/bdl-consumer",
     "continuum://guides/change-cookbook",
     "continuum://guides/client-install",
@@ -70,13 +112,152 @@
     "continuum://examples/development-package/conversation-room/"
   ],
   "staleTerms": [
-    { "term": "customView", "why": "diagram_request no longer takes view inputs" },
-    { "term": "diagram_custom_view_vocabulary", "why": "tool removed from the Diagram server" },
-    { "term": "continuum://agent/catalogue", "why": "not readable through continuum_knowledge; use mode index" },
-    { "term": "business/<system>.bdl", "why": "the .bdl lives in model/ (package inventory)" },
-    { "term": "§2a", "why": "old section numbering" },
-    { "term": "§5A", "why": "old section numbering" },
-    { "term": "accepted only by the human", "why": "authority is defined once, in skill section 1" },
-    { "term": "Never accept one", "why": "authority is defined once, in skill section 1" }
+    {
+      "term": "customView",
+      "why": "diagram_request no longer takes view inputs"
+    },
+    {
+      "term": "diagram_custom_view_vocabulary",
+      "why": "tool removed from the Diagram server"
+    },
+    {
+      "term": "continuum://agent/catalogue",
+      "why": "not readable through continuum_knowledge; use mode index"
+    },
+    {
+      "term": "business/<system>.bdl",
+      "why": "the .bdl lives in model/ (package inventory)"
+    },
+    {
+      "term": "§2a",
+      "why": "old section numbering"
+    },
+    {
+      "term": "§5A",
+      "why": "old section numbering"
+    },
+    {
+      "term": "accepted only by the human",
+      "why": "authority is defined once, in skill section 1"
+    },
+    {
+      "term": "Never accept one",
+      "why": "authority is defined once, in skill section 1"
+    }
+  ],
+  "sections": {
+    "continuum://guides/package-formats": [
+      "the-layout-and-what-is-discovered",
+      "1",
+      "2",
+      "3",
+      "4",
+      "the-adapter",
+      "5",
+      "the-citation-grammar",
+      "the-status-vocabulary",
+      "the-loop"
+    ],
+    "continuum://guides/development-package": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "4.1",
+      "4.2",
+      "4.3",
+      "4.4",
+      "4.5",
+      "4.6",
+      "5",
+      "6",
+      "6.1",
+      "6.2",
+      "7",
+      "8",
+      "9"
+    ],
+    "continuum://guides/repository-to-source": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "continuum://guides/development-workflow": [
+      "1",
+      "2",
+      "3",
+      "3.1",
+      "3.2",
+      "3.3",
+      "3.4",
+      "3.5",
+      "4",
+      "4.1",
+      "4.2",
+      "4.3",
+      "4.4",
+      "5"
+    ]
+  },
+  "shortNames": {
+    "package-formats": "continuum://guides/package-formats",
+    "development-package": "continuum://guides/development-package",
+    "development-workflow": "continuum://guides/development-workflow",
+    "repository-to-source": "continuum://guides/repository-to-source"
+  },
+  "limits": {
+    "about": "Published by diagram_models (limits) and continuum_workspace_create (lifecycle). check.mjs requires every quoted value in the docs to match.",
+    "snapshotsPerAccount": 16,
+    "snapshotTtlHours": 24,
+    "importMaxFiles": 64,
+    "importInlineKiB": 192,
+    "workspaceIdleHours": 2,
+    "workspacesHeld": 64
+  },
+  "liveProbes": [
+    {
+      "verified": "2026-11-12",
+      "probe": "continuum_workspace_create + continuum_workspace_compile (plain-text documents)",
+      "result": "compiled and attested"
+    },
+    {
+      "verified": "2026-11-12",
+      "probe": "continuum_query and continuum_preview with workspace",
+      "result": "answered; preview returns traces from every entry message"
+    },
+    {
+      "verified": "2026-11-12",
+      "probe": "continuum_process_graph with workspace and trace / dependencies",
+      "result": "refused: one of trace, paths, impact, dependencies or explain is required"
+    },
+    {
+      "verified": "2026-11-12",
+      "probe": "continuum_apply with workspace, manifestPath, changePath, files (base64 .adl-change)",
+      "result": "applied, valid"
+    },
+    {
+      "verified": "2026-11-12",
+      "probe": "continuum_workspace_edit create-document .bdl, then continuum_business_compile with workspace and artifact",
+      "result": "valid, completelyValidated"
+    },
+    {
+      "verified": "2026-11-12",
+      "probe": "diagram_models limits",
+      "result": "maxPreparations 16, snapshotTtlSeconds 86400, maxFiles 64, maxInlineBytes 196608"
+    },
+    {
+      "verified": "2026-11-12",
+      "probe": "continuum_workspace_create lifecycle",
+      "result": "idleTtlSeconds 7200; lost sooner on scale-to-zero, restart, eviction past 64"
+    },
+    {
+      "verified": "2026-11-12",
+      "probe": "diagram_model_import with bindings",
+      "result": "NOT EXERCISED (snapshot quota); schema requires vocabularies also sent as files"
+    }
   ]
 }

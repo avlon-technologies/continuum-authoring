@@ -20,7 +20,7 @@ For every subagent call in the transcript, check:
 - **Stalls and loops:** repeated failed compiles, repeated identical tool calls, paid diagram runs that were duplicated.
 - **Ownership:** did anyone edit a file they do not own?
 
-Turn each failure into one concrete change to an agent definition or the skill (an instruction, an example URI, a failure-playbook row), then re-run. The bar for a release is two consecutive clean runs at the highest readiness level the route allows (skill §9): **Development-ready** with the CLI (`continuum package check` passes), or **Authored — package UNVERIFIED** with MCP only (ADL and BDL compile, every scenario reference confirmed by query, bindings pinned to the current attestation, nothing claimed as built). In both cases every gap is labelled and there is no major friction.
+Turn each failure into one concrete change to an agent definition or the skill (an instruction, an example URI, a failure-playbook row), then re-run. The bar for a release is two consecutive clean runs at the highest readiness level the route allows, judged row by row against the readiness table in skill §9, with every gap labelled and no major friction.
 
 ## Experience discovery and independent consumer assessment
 

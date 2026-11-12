@@ -14,11 +14,11 @@ Root-anchored qualified names for Requirements, Tests, the Environment, Agents a
 
 ## Procedure
 1. **Choose what to prove:** the model's Requirements and Tests and the goal's critical journeys, the happy path of each core workflow, declared failure and exception paths, security and safety guarantees, declared ordering or delivery. Prefer 5–15 sharp scenarios.
-2. **Write each scenario:** `acceptance-scenario: "1"`, kebab-case `name` equal to the file name, a one-sentence `purpose`, at least one `verifies`, and `given` / `when` / `then` with at least one assertion. Add `test` where a declared Test applies, `environment`, `trace.from` (a Command or Event) for key flows, and `provider` / `budget` for Agents (fake provider first; no real keys).
+2. **Write each scenario:** `acceptance-scenario: "1"`, kebab-case `name` equal to the file name, a one-sentence `purpose`, at least one `verifies`, and `given` / `when` / `then` with at least one assertion. Add `test` where a declared Test applies (the scenario must then verify at least one thing that Test declares), `environment`, `trace.from` (a Command or Event) for key flows, and `provider` / `budget` for Agents (fake provider first; no real keys).
 3. **Steps are keys, not prose:** a small, reused dotted vocabulary; data in `args`, wording in `text`.
 4. **Assert declared behaviour only.** Ordering must come from a Reaction, Workflow or delivery expectation; a count from a requirement. An undeclared behaviour you need to assert is a model gap for the ADL author (`CHALLENGE`), not a scenario.
-5. **Confirm every reference** (`verifies`, `test`, `environment`, `provider` keys, `trace.from`) with `continuum_query` against the model's workspace. With the CLI, also build a scratch copy (§5): it fails on any unresolved reference and reports `uncoveredRequirements`.
-6. **Compute Test coverage yourself:** a Test is covered when every target it declares appears in some scenario's `verifies` (the build does not report this).
+5. **Confirm every reference** (`verifies`, `test`, `environment`, `provider` keys, `trace.from`) with `continuum_query` against the model's workspace.
+6. **Coverage.** With the CLI, build a scratch copy (§5): it fails on any unresolved reference and reports coverage (Requirements no scenario verifies; Tests whose declared targets no scenario covers); use that report. MCP only: compute it by hand (a Requirement is covered when some scenario verifies it; a Test when every target it declares appears in some scenario's `verifies`) and label it hand-computed.
 7. **Check against the code** when an implementation exists; a contradiction is either a model gap or an implementation bug, with paths.
 
 ## Failure cases
@@ -26,4 +26,4 @@ Root-anchored qualified names for Requirements, Tests, the Environment, Agents a
 - No Requirements or Tests in the model: verify the elements involved and recommend, in `CHALLENGE`, that the ADL author declare requirements.
 
 ## Return
-A coverage table (requirement or test → scenarios, uncovered marked) before the §8 block. `EVIDENCE` gives the per-reference query confirmations and, with the CLI, the scratch build's resolution and coverage. `HANDOFF` lists every new step key and changed `args`, which the implementer must bind in `acceptance/adapter.mjs`.
+A coverage table (requirement or test → scenarios, uncovered marked, source: build or hand-computed) before the §8 block. `EVIDENCE` gives the per-reference query confirmations and, with the CLI, the scratch build's resolution and coverage. `HANDOFF` lists every new step key and changed `args`, which the implementer must bind in `acceptance/adapter.mjs`.
