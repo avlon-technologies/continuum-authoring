@@ -1,24 +1,26 @@
-# Continuum Authoring — Vision
+# Continuum Authoring — Architecture Intent Vision (Experiment)
 
-Make Continuum authoring feel like collaborating with a capable architecture partner: a human describes goals, constraints and intent; a coordinating Claude Code agent works with specialized authors to deliver development-ready Continuum architecture.
+## Purpose
+Help humans and AI maintain a shared, durable understanding of the **architecture that matters**: system boundaries, responsibilities, consequential behavior, constraints, decisions, principles and the reasoning behind them.
 
-## Outcome
-The deliverable is a **development-ready Continuum package** (with the CLI; MCP-only sessions reach *Authored — package UNVERIFIED*), not an implemented product: Goal, ADL, BDL when relevant, technology bindings, executable acceptance scenarios and useful Continuum diagrams.
+## Value proposition
+Capable coding agents can already build end-to-end applications from a product vision. Continuum must therefore justify its cost through improved architectural communication, reliable independent interpretation, traceable decisions and safer evolution — not through specification volume or initial implementation speed.
 
-## Principles
-1. Human and AI collaborate as peers; ask about consequential tradeoffs, not every minor choice.
-2. Native Continuum semantics and tools are the authority on model legality; agent confidence is not proof.
-3. One coherent architecture. The primary agent authors the integrated solution; specialists are invoked only for bounded challenge or independent work that improves it.
-4. Never fabricate repository evidence or claim a tool validated something it did not.
-5. Keep explicit unknowns and architecture decisions; distinguish proposals from accepted decisions.
-6. Authoring specialists draw exploratory native Continuum diagrams while reasoning; a dedicated Diagram Agent owns final cross-view accuracy, completeness, consistency and communication.
-7. Optimize human experience, not agent count or tool-call volume.
+## Collaboration
+Two participants:
+1. An **orchestrator**, simulating the human who holds product and architecture authority.
+2. A **Continuum author**, who proposes, challenges, clarifies and captures intent.
 
-## Design philosophy
-Start from the experience and challenge the assumptions before formalizing the semantic model. Human and agent can each originate or contest ideas; modeling must earn its cost. Research unfamiliar, consequential choices on demand. Never equate successful compilation or attestation with architecture quality or product fitness. A bounded fresh independent review challenges the first meaningful integrated draft and a final fresh review checks developer readiness; neither substitutes for the architect's integrated reasoning.
+They hold a focused dialogue. The specialist asks only questions that change consequential architectural choices. The orchestrator approves or delegates choices; assumptions remain labeled.
 
-## MVP
-One end-to-end Architecture Agent, with optional ADL, BDL, technology-binding and acceptance-scenario advisers and a Diagram Agent responsible for the coherent final diagram set. Specialists are not mandatory production stages. A shared skill defines the team's protocol; the servers' tool descriptions define tool procedures. Use an existing repo as a target; do not invent an example product or write implementation code unless separately requested.
+## Artifacts
+Produce the minimum sufficient ADL, BDL, technology bindings, decisions, principles and faithful diagrams needed to communicate architectural intent. Each modeled element must earn its place by improving comprehension or change reasoning. Do not require exhaustive API contracts, screen details, database schema or acceptance-case coverage.
 
-## Success
-A developer can proceed without inventing major architecture decisions; the handoff names remaining blockers and links to actual verification evidence. Record the human's subjective experience, interruptions and biggest friction points.
+## Quality
+Evaluate artifact-specific semantic fidelity, clarity and consistency, plus independent comprehension, invariant preservation, change-impact reasoning, information economy and authoring cost. Successful compilation is necessary evidence of structural validity where applicable, not proof of intent fidelity.
+
+## Experience
+Show meaningful progress, important decisions, risks, convergence and stopping rationale. Avoid lengthy silent runs, tool-call chatter and fabricated completion percentages.
+
+## Experiment
+Compare a new intent-focused treatment with the frozen original Recall completeness-focused control under identical blind evaluation tasks. This branch is a research experiment, not a replacement for the released framework on `main`.
