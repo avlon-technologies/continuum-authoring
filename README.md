@@ -1,6 +1,6 @@
 # Continuum Authoring
 
-Claude Code agents that work with you to turn a product idea or an existing codebase into a **development-ready Continuum architecture**: a compiled architecture model, a business model where it helps, technology bindings, executable acceptance scenarios and grounded diagrams, ready to hand to a developer or a coding agent.
+An integrated Claude Code architecture agent, supported by optional specialist advisers, that works with you to turn a product idea or an existing codebase into a **development-ready Continuum architecture**: a compiled architecture model, a business model where it helps, technology bindings, executable acceptance scenarios and grounded diagrams, ready to hand to a developer or a coding agent.
 
 This repository is the authoring framework. It does not implement your product.
 
@@ -110,16 +110,16 @@ Then describe what you want, for example:
 What happens:
 
 1. The coordinator checks which servers and tools are available, surveys the repository, and asks you a few high-value questions about user journeys, constraints and costly-to-reverse choices. It challenges assumptions and suggests what does not need modeling.
-2. It briefs the specialists (ADL, BDL, bindings, scenarios, diagrams, and research only when outside evidence would change a decision) and relays their findings and questions to you. The specialists never talk to you directly.
+2. It authors the architecture **end to end** and invokes specialist agents only for targeted, independent challenges or clearly separable work. Specialists are not mandatory stages.
 3. It shows you the diagrams, with their labels: a *provisional proposal* is for reaction; only a *verified* diagram is a deliverable.
-4. A fresh agent that wrote none of it reviews the result as a developer would and names the decisions it would still have to invent.
+4. A fresh reviewer challenges the first meaningful integrated draft before costly downstream work. A separate fresh reviewer challenges the final verified package as a developer would, identifying contradictions, vacuous tests and decisions it would still need to invent.
 5. Everything lands in your repository's `continuum/` directory, ending with `continuum/HANDOFF.md`: the readiness level reached, a status and evidence table, open gaps and choices, the biggest blockers and a retrospective.
 
 ## The agents
 
 | Agent | Role |
 |---|---|
-| [`continuum-architect`](.claude/agents/continuum-architect.md) | Coordinator and your only point of contact; owns the goal, readiness and the handoff. |
+| [`continuum-architect`](.claude/agents/continuum-architect.md) | Primary end-to-end architecture author and your only point of contact; owns coherence, readiness and the handoff. |
 | [`continuum-adl-author`](.claude/agents/continuum-adl-author.md) | The architecture model and changes to it. |
 | [`continuum-bdl-author`](.claude/agents/continuum-bdl-author.md) | The business model, when the business rules are the hard part. |
 | [`continuum-tech-author`](.claude/agents/continuum-tech-author.md) | Technology bindings per environment, evidenced from your repository. |
@@ -127,7 +127,7 @@ What happens:
 | [`continuum-diagram-author`](.claude/agents/continuum-diagram-author.md) | The final, consistent diagram set. |
 | [`continuum-researcher`](.claude/agents/continuum-researcher.md) | Optional: dated external evidence for a consequential choice. |
 
-All of them follow one shared protocol, the [`continuum-authoring` skill](.claude/skills/continuum-authoring/SKILL.md): authority, communication, tool routes, file ownership, contracts, readiness levels and failure handling, each defined once. See also the [vision](VISION.md) and the [evaluation template](EXPERIMENT.md).
+Specialists are available on demand, not required production stages. All of them follow one shared protocol, the [`continuum-authoring` skill](.claude/skills/continuum-authoring/SKILL.md): authority, communication, tool routes, file ownership, contracts, readiness levels and failure handling, each defined once. See also the [vision](VISION.md) and the [evaluation template](EXPERIMENT.md).
 
 ## Known limitations
 
