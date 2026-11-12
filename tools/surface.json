@@ -1,5 +1,5 @@
 {
-  "about": "Snapshot of the live Continuum server surface that this repository's agents cite. tools/check.mjs (static) fails when a cited tool, knowledge URI, guide section or quoted limit disagrees with this file. This file is refreshed by the live procedure in tools/LIVE-CHECKS.md; update verified when you do.",
+  "about": "Historical snapshot of the Continuum tool surface verified on the recorded date. Retained as tool-discovery context for the architecture-intent experiment, not a live capability guarantee or a semantic quality measure. Current tool descriptions and normative specifications are authoritative; see tools/LIVE-CHECKS.md.",
   "verified": "2026-11-12",
   "servers": {
     "continuum": "https://mcp.continuum.dev.avlon.ca/mcp",
