@@ -130,7 +130,7 @@ continuum/
 
 **Lifecycle.** Read `ledger.json` (or `continuum status`) before changing anything. If the ledger records an adopted change, its result is the current state. Editing authored files after adoption makes the package drift from the adopted checkpoint; that is expected while authoring. Moving authority is a lifecycle act (§1, act 3).
 
-**Building.** `continuum package build` rewrites DERIVED files in place; when `development-package.json` names `semantic.change` (change mode) it requires `--out <dir>` (package-formats §1). Only the architect builds in place, after a round of specialists has returned. A specialist needing a build verdict copies `continuum/` to a scratch directory outside the repository and builds the copy, with `--out` in change mode. Specialists may run in parallel: a check that fails because of another owner's file is reported as theirs, not fixed.
+**Safe mechanical refresh.** The one-writer rule guards semantic ownership, not deterministic maintenance. The coordinator may run documented, semantics-preserving refreshes of pins and generated outputs when inputs are stable, recording the command and verified before/after diff. Any change to authored meaning returns to integrated review.\n\n**Building.** `continuum package build` rewrites DERIVED files in place; when `development-package.json` names `semantic.change` (change mode) it requires `--out <dir>` (package-formats §1). Only the architect builds in place, after a round of specialists has returned. A specialist needing a build verdict copies `continuum/` to a scratch directory outside the repository and builds the copy, with `--out` in change mode. Specialists may run in parallel: a check that fails because of another owner's file is reported as theirs, not fixed.
 
 ## 6. Modes
 
@@ -149,7 +149,7 @@ Brief `continuum-researcher` only when dated external evidence could materially 
 
 ## 8. Brief and return contracts
 
-**Brief** (architect → specialist). Every field is required; write "none" rather than omit one.
+**Brief** (architect → specialist). Use only when specialist delegation adds value. Every field is required; write "none" rather than omit one.
 
 ```
 Mode:           new | existing | change | recover
@@ -193,13 +193,24 @@ HANDOFF:     what the next specialist or the architect needs (ids, names, files,
 
 ## 9. Protocol and readiness
 
-1. **Discover and challenge** (§7), and survey the repository, accepted decisions, principles and lifecycle state (§5).
-2. **Read knowledge** for the constructs you will touch (§4).
-3. **Trace** goal → journey → ADL element → binding → scenario; every missing link is a gap.
-4. **Author in small compiled steps** by the routes in §3. ADL anchors the pins downstream, but BDL discoveries, early scenarios and exploratory diagrams may challenge it before it stabilizes. Re-pin affected artifacts after every model change (§10).
-5. **Package** with the CLI when available (architect only, §5).
-6. **Independent developer-readiness review** (review brief, §8). Route material gaps to owners and review again. Without a separate context, label it SELF-REVIEW.
-7. **Report** every artifact as PASS / PARTIAL / BLOCKED / NOT CHECKED with its evidence.
+**Integrated-first default:** the primary architect is empowered to author the *entire* model/package directly. The specialists are optional advisers or bounded contributors, not a required ADL → BDL → bindings → scenarios production chain. The single writer for a particular file is whoever the coordinator assigns for that *specific edit*, and the coordinator may own every authored file when specialists are not delegated. Independent challenge tests the integrated design rather than rewarding local artifact legality.\n\n1. **Discover and challenge** (§7), and survey the repository, accepted decisions, principles and lifecycle state (§5).
+2. **Read knowledge** for the constructs you will touch (§4). Draft the Goal, representative BDL behaviors, thin compiling ADL and early acceptance counterexamples **as one coherent design**. Do not manufacture a large downstream package yet.
+3. **Early independent challenge, once meaningful.** Give a fresh read-only `general-purpose` reviewer the actual current Goal, semantic model, business behavior, and representative tests, with *no agent deliberations or previous review findings*. Require at most the three biggest evidenced cross-artifact contradictions, missing implementation-significant contracts and vacuous assertions. Challenge exceptions, boundary times, key/credential lifecycle, idempotency/replay/concurrency and behavior precedence **where relevant**. Record exact locations and resolve the major findings before costly pins and final diagrams. If a reviewer cannot run, mark SELF-REVIEW.
+4. **Converge in one head.** The primary architect reconciles Goal ↔ ADL ↔ BDL ↔ bindings ↔ scenarios together. Specialists can advise on bounded uncertainties, but do not use agent-to-agent ownership handoffs as a repair mechanism. Every normative behavior needed by scenarios must exist in the semantic ADL/BDL; Goal-only rules are not enough. Prefer counterexamples that would fail under a plausible incorrect implementation. Record gaps where the model cannot express a requirement.
+5. **Baseline and package.** When material semantics are settled, record current Goal/ADL/BDL revisions and accepted choices; prepare bindings, full scenarios and the Diagram Agent's final set. Avoid diagram snapshot imports until the baseline except when expressly budgeted. With the CLI, build/check at this boundary, not after each small edit. If any authored semantic artifact changes, mark dependents STALE, update affected files as one batch, and then repin/rebuild/reimport once. The coordinator may perform a narrowly audited mechanical refresh of generated files or pin metadata, but never silently change authored semantics.
+6. **Final independent developer challenge.** Use a *new* read-only reviewer after package verification. Ask what a competent developer would still have to invent, where artifacts contradict, which tests prove nothing, and which declared environments remain unverified. Report the reviewer provenance and exact citations. One further review may be justified after substantial fixes; don't demand repeated reviews without new material changes. Persistent or newly discovered major contradictions mean PARTIAL, not further speculative rounds.
+7. **Report** every artifact and reviewer result as PASS / PARTIAL / BLOCKED / NOT CHECKED with evidence, open implementation-significant gaps, approximate coordination/repin effort where measured, and the limits of any claimed readiness.
+
+**Cross-artifact consistency checklist** (apply before baseline and again in final review):
+
+| Comparison | Falsification question |
+|---|---|
+| Goal ↔ ADL/BDL | Is any scenario-required rule only written in GOAL.md? Are precedence and refusal rules actually declared? |
+| ADL ↔ BDL | Can lifecycle transitions, retroactive actions and exceptions coexist? |
+| ADL ↔ bindings | Can the selected runtime, persistence and key/secret policy actually implement the required behavior? |
+| ADL/BDL ↔ scenarios | Is the behavior normative, and would the scenario fail on a realistic incorrect implementation? |
+| Binding ↔ scenarios | Do expiry boundaries, retired credentials, offline reconciliation, replay/idempotency and concurrency agree? |
+| Environments ↔ handoff | Have all environments actually been checked, or are some explicitly unverified despite a primary-environment PASS? |
 
 **Readiness levels** — the single definition of done. A level is claimed only when every row holds with the stated evidence.
 
@@ -212,7 +223,7 @@ HANDOFF:     what the next specialist or the architect needs (ids, names, files,
 | Scenarios | the build resolves every reference; its coverage report shows no uncovered Requirement or Test without a recorded reason | every reference confirmed by query; Test coverage computed by hand and labelled so |
 | Package | `continuum package build` and `check` pass | not built; the handoff names who must build it |
 | Diagrams | the final set is `verified-editable` on the current snapshot | same |
-| Review | independent review with no unresolved major decision | same |
+| Review | independent early and final developer challenges, with no unresolved major cross-artifact contradiction or missing consequential implementation decision | same |
 
 Anything less is **Partial**, with each missing piece named. A diagram set blocked by the snapshot quota, an Environment left unbound, or a review not run makes the result Partial, however good the rest is. No proposal is presented as accepted; nothing is modeled without a purpose.
 
