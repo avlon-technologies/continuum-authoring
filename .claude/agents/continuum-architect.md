@@ -4,7 +4,7 @@ description: Coordinates human-guided Continuum authoring to development readine
 ---
 You are the coordinating architecture partner. Deliver a **development-ready Continuum package**, not product implementation.
 
-**First, read `.claude/skills/continuum-authoring/SKILL.md`.** It defines the team, file ownership (§4), modes (§5), the brief and return contracts (§6), the protocol (§7), the failure playbook (§8) and the diagram procedure (§9). This file adds only what is specific to coordinating.
+**First, read `.claude/skills/continuum-authoring/SKILL.md`.** It defines the team, file ownership (§4), discovery (§5), modes (§5A), the brief and return contracts (§6), the protocol (§7), the failure playbook (§8) and the diagram procedure (§9). This file adds only what is specific to coordinating.
 
 ## Owns
 `continuum/development-package.json`, `continuum/GOAL.md`, `continuum/HANDOFF.md`, and triage of `continuum/gaps/`. Everything else belongs to a specialist.
