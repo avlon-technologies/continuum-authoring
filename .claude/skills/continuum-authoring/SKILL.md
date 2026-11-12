@@ -1,6 +1,6 @@
 ---
 name: continuum-authoring
-description: Shared protocol for the continuum-* agents - authority, communication, MCP-first tool routes, knowledge map, package layout and ownership, discovery, brief/return contracts, readiness levels, failure playbook and diagram rules. The single source of truth each agent definition refers to.
+description: Shared protocol for the continuum-* agents - authority, communication, MCP-first tool routes, knowledge map, package layout and ownership, discovery, brief/return contracts, readiness levels, failure playbook, diagram rules and progress reporting. The single source of truth each agent definition refers to.
 ---
 # Continuum authoring — shared protocol
 
@@ -266,3 +266,62 @@ The Continuum Diagram server's tool descriptions are the procedure: how to impor
 - **Save, then return.** Save the PNG from its signed link as soon as the run finishes, since signed links expire (`curl -o continuum/diagrams/<nn>-<slug>.png "<link>"`; if it has expired, re-read the run with `diagram_status` and use the link it returns), SVG and reports from `diagram_artifact`, and return them in `DIAGRAMS` (§8). The **architect** views a run itself (`diagram_status` returns the image to the caller) and gives the human the saved path and signed link; a picture a subagent received is not visible to the human.
 - **No invented facts.** A diagram cannot make undeclared architecture true; report the missing semantics as a gap for its owner. Never substitute Mermaid, hand-drawn SVG or a generic image generator for a Continuum diagram unless the human explicitly asks.
 - **Cost.** Image runs are rate-limited work on a free preview; reuse and revise runs rather than re-rendering, and never duplicate a render another agent already made.
+
+## 12. Progress reporting
+
+A run can last an hour or more, often in the background. The human must be able to see, at any moment and without interrupting it, what is happening, what is done, what is proven, and what is blocked. Two files carry that, outside the package so neither the guard nor the package build ever sees them:
+
+```
+.claude/progress/
+  STATUS.md        coordinator only    current snapshot, overwritten
+  events.jsonl     every agent         append-only log, one JSON object per line
+  runs/<run>.md    coordinator only    the final STATUS.md of each earlier run
+```
+
+The coordinator is the architect, or whichever agent started the run and briefs the others. These files are not talking to the human (§2): specialists write events, never `STATUS.md`, and still return everything through §8. `events.jsonl` is the one exception to one writer per file (§1): agents only append whole lines and never edit or rewrite it. Repositories should ignore `.claude/progress/` in git.
+
+**Run start.** The coordinator picks a run id `<yyyy-mm-ddThhmm>-<slug>` from the clock, moves any existing `STATUS.md` to `runs/<old run>.md`, writes a new `STATUS.md`, appends a `start` event, and puts `Run:` with the id in every brief (an extra line, which specialists copy into their events).
+
+**Events.** One line per event, appended with a single command and a real timestamp, never an invented one:
+
+```
+printf '%s\n' "{\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"run\":\"<run>\",\"agent\":\"<name>\",\"event\":\"<kind>\",\"phase\":\"<phase>\",\"summary\":\"<one line>\"}" >> .claude/progress/events.jsonl
+```
+
+Optional fields: `status` (PASS / PARTIAL / BLOCKED), `evidence` (`tool — verdict`, only for a check that ran), `files` (paths changed). `kind` is one of:
+
+| kind | when |
+|---|---|
+| `start` / `done` | an agent begins or returns its work (`done` carries its §8 `STATUS`) |
+| `phase` | the coordinator moves the run to a new phase |
+| `delegate` | the coordinator briefs an agent: who, and what for |
+| `verdict` | a check ran: compile, apply, package build or check, test run, diagram run. Failures too |
+| `decision` | a decision was proposed, or an agreement (§1 act 2) recorded |
+| `question` | something needs the human: the question and its recommended default |
+| `blocked` | work stopped: the exact error text and what would unblock it |
+| `heartbeat` | 10 minutes have passed without another event: what is in progress now |
+
+Specialists append at least `start`, one `verdict` per compiled or checked step, any `blocked`, and `done`.
+
+**STATUS.md.** Rewritten by the coordinator on every `phase`, `delegate`, `done`, `verdict` that changes a row, `question` and `blocked`, and at least every 10 minutes while the run is active. Shape:
+
+```
+# <goal in one line>
+Run: <run id> · Started <ts> · Updated <ts> · State: RUNNING | WAITING ON HUMAN | BLOCKED | DONE
+Now: <what is happening at this moment, and which agent is doing it>
+
+| Phase | Owner | State | Evidence |        one row per planned phase; state: pending, active, done, blocked, skipped
+## Active delegations                      agent, task, started at
+## Proven                                  only verdicts that ran: tool, verdict, revision (attestation, commit)
+## Claimed, not yet checked                written but not compiled, built or run; UNVERIFIED
+## Blockers                                exact error text, owner, what unblocks it
+## Questions for the human                 question, why it matters, recommended default
+## Decisions                               proposed and recorded, with ids
+## Next                                    the next one to three steps
+```
+
+Never predict a result or report a check as passing before it ran. An `Updated` time older than about 15 minutes during a RUNNING state is itself a signal; a stalled run says so in `Now:` rather than looking alive. At the end, `STATUS.md` says DONE (or the level reached, §9) and points to `HANDOFF.md`.
+
+**Push, sparingly.** When the coordinator runs as a background agent and has a `SendMessage` tool, it also sends the main session (`to: "main"`) one short message when a phase completes, when the run is blocked, when a question needs the human, and when it is done: one line on what happened, plus the path of `STATUS.md`. No other messages; the files carry the detail.
+
+**Reading progress from the main session.** Read `STATUS.md` first; for recent detail, read the last 20 lines of `events.jsonl`, or the lines after the last time you reported. Never read a background agent's transcript or output file to find progress. Report what the files say as the run's own account, separate from anything you checked yourself on disk (file times, git, a compile you ran), and name which is which.

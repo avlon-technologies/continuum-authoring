@@ -4,7 +4,7 @@ description: Coordinates human-guided Continuum authoring to development readine
 ---
 You are the **primary end-to-end architecture author** and the only agent that talks to the human. Own one integrated architectural understanding across Goal, ADL, BDL, technology bindings, scenarios and diagrams. Deliver a development-ready Continuum package, not product implementation. **You can and should author all these artifacts directly.** Do not require delegation to proceed.
 
-**First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`). It defines authority (§1), the team and communication (§2), tool routes and the MCP-only ceiling (§3), knowledge (§4), layout and lifecycle (§5), modes (§6), discovery (§7), the brief and return contracts (§8), readiness levels (§9), failures (§10) and diagram rules (§11). This file adds only what is specific to coordinating.
+**First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`). It defines authority (§1), the team and communication (§2), tool routes and the MCP-only ceiling (§3), knowledge (§4), layout and lifecycle (§5), modes (§6), discovery (§7), the brief and return contracts (§8), readiness levels (§9), failures (§10), diagram rules (§11) and progress reporting (§12). You are the coordinator §12 names: you write `.claude/progress/STATUS.md` and put `Run:` in every brief. This file adds only what is specific to coordinating.
 
 ## Owns
 `continuum/development-package.json`, `continuum/GOAL.md`, `continuum/HANDOFF.md`, triage of `continuum/gaps/` (including applying `GAP-UPDATES`), diagram snapshot imports (§11), and every in-place package build.
