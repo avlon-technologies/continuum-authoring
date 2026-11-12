@@ -12,8 +12,9 @@ This repository is the authoring framework. It is not an example app, and it doe
 | [`continuum-adl-author`](.claude/agents/continuum-adl-author.md) | ADL: components, interfaces, dependencies, flows. |
 | [`continuum-bdl-author`](.claude/agents/continuum-bdl-author.md) | BDL: business entities, use cases, workflows, exceptions. |
 | [`continuum-tech-author`](.claude/agents/continuum-tech-author.md) | Technology bindings, environments, security, deployment. |
+| [`continuum-acceptance-author`](.claude/agents/continuum-acceptance-author.md) | Executable Given/When/Then acceptance scenarios traced to the model. |
 | [`continuum-diagram-author`](.claude/agents/continuum-diagram-author.md) | Owns the final diagram set: accuracy, cross-view consistency, communication. |
-| [`continuum-authoring` skill](.claude/skills/continuum-authoring/SKILL.md) | The shared authoring protocol and Diagram procedure every agent follows. |
+| [`continuum-authoring` skill](.claude/skills/continuum-authoring/SKILL.md) | What every agent reads first: package layout and file ownership, brief/return contracts, where Continuum's documentation lives, failure playbook, Diagram procedure. |
 
 See also the [vision](VISION.md) and a [pilot template](EXPERIMENT.md) for evaluating a session.
 
@@ -41,15 +42,25 @@ See also the [vision](VISION.md) and a [pilot template](EXPERIMENT.md) for evalu
    cp -r continuum-authoring/.claude/agents continuum-authoring/.claude/skills <your-project>/.claude/
    ```
 
-   You can also open this repository directly in Claude Code to try it out. Run `/agents` to confirm the five agents are listed.
+   You can also open this repository directly in Claude Code to try it out. Run `/agents` to confirm the six agents are listed.
 
 ## Usage
 
-In Claude Code, from your project:
+Start Claude Code **with the coordinator as the main session**, from your project:
 
-> Use the continuum-architect agent to author the architecture for this project to development-ready: ADL, relevant BDL, technology bindings, acceptance scenarios, and Continuum exploratory/polished diagrams. Do not implement the product. Show validation evidence, gaps, and an honest agent-experience retrospective.
+```sh
+claude --agent continuum-architect
+```
 
-Expect the coordinator to ask about consequential trade-offs, not every detail. It closes with an artifact/status/evidence/gaps table, the open choices, the three biggest blockers and a retrospective.
+This matters: Claude Code subagents cannot start other subagents. If you instead ask a normal session to "use the continuum-architect agent", it runs as a subagent and cannot delegate to the specialists (it will tell you, and fall back to doing their work itself).
+
+Then describe what you want, for example:
+
+> Author the architecture for this project to development-ready: ADL, relevant BDL, technology bindings for local development, acceptance scenarios, and Continuum diagrams. Do not implement the product. Show validation evidence, gaps, and an honest agent-experience retrospective.
+
+The coordinator checks which tools are available, surveys the repository, confirms the goal and consequential trade-offs with you, then briefs the specialists. Work lands in your repository's `continuum/` directory, with one owner per file (see the [skill](.claude/skills/continuum-authoring/SKILL.md#4-package-layout-and-ownership)). It closes with `continuum/HANDOFF.md`: an artifact/status/evidence table, open gaps and choices, the three biggest blockers and a retrospective.
+
+The agents read Continuum's specifications, guides and worked examples from the MCP server as they go, so they track the current language rather than a copy in this repository.
 
 Diagram runs on the Continuum Diagram server are metered work, so the agents reuse and revise runs instead of re-rendering.
 

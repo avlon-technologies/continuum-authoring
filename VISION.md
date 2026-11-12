@@ -15,7 +15,7 @@ The deliverable is a **development-ready Continuum package**, not an implemented
 7. Optimize human experience, not agent count or tool-call volume.
 
 ## MVP
-One coordinator plus focused ADL, BDL and technology-binding subagents, with a Diagram Agent responsible for the coherent final diagram set. Shared skills describe tool procedures. Use an existing repo as a target; do not invent an example product or write implementation code unless separately requested.
+One coordinator plus focused ADL, BDL, technology-binding and acceptance-scenario subagents, with a Diagram Agent responsible for the coherent final diagram set. Shared skills describe tool procedures. Use an existing repo as a target; do not invent an example product or write implementation code unless separately requested.
 
 ## Success
 A developer can proceed without inventing major architecture decisions; the handoff names remaining blockers and links to actual verification evidence. Record the human's subjective experience, interruptions and biggest friction points.
