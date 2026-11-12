@@ -45,7 +45,7 @@ Each artifact must be mutually consistent and traceable to the same intent; don'
 - The existing historical `continuum/` package and original product/UX/implementation specs in Recall are **control data**; the treatment author must not inspect them. The only product baseline is the frozen Recall vision.
 
 ## 6. Quality and compression
-Use `experiment/QUALITY-RUBRIC.md`. Evaluate ADL, BDL, technology bindings, decisions and principles separately, then the integrated model for intent fidelity, independent comprehension, evolution reasoning, coherence and information economy.
+Use `experiments/architecture-intent/QUALITY-RUBRIC.md`. Evaluate ADL, BDL, technology bindings, decisions and principles separately, then the integrated model for intent fidelity, independent comprehension, evolution reasoning, coherence and information economy.
 
 Run a compression pass: for every component, relationship, behavior, binding, decision and principle, ask what architectural meaning or future-change reasoning would be lost if removed. Simplify without losing consequential information. A smaller model is not automatically better; a larger model must earn its additional detail.
 
@@ -57,4 +57,4 @@ Report to the end user at meaningful milestones: start, initial interpretation, 
 Track elapsed effort if measurable, material and avoidable questions, substantive revisions, tool friction and omissions. Stop when the orchestrator confirms significant intent, material contradictions are resolved or disclosed, and further work offers diminishing value.
 
 ## 8. Experiment execution
-Read `experiment/README.md`, `experiment/RUNBOOK.md`, and `experiment/QUALITY-RUBRIC.md`. Run from `continuum-authoring` on `experiment/architecture-intent`; treatment outputs go under `experiment/runs/01/`. The original Recall package at the frozen commit is the control. Do not implement the app, overwrite control artifacts, or declare a winner before blind evaluation.
+Read `experiments/architecture-intent/README.md`, `experiments/architecture-intent/RUNBOOK.md`, and `experiments/architecture-intent/QUALITY-RUBRIC.md`. Run from `continuum-authoring` on `experiment/architecture-intent`; treatment outputs go under `experiments/architecture-intent/runs/01/`. The original Recall package at the frozen commit is the control. Do not implement the app, overwrite control artifacts, or declare a winner before blind evaluation.
