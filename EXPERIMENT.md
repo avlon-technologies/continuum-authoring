@@ -1,5 +1,7 @@
 # Focused authoring pilot
 
+A template for evaluating one authoring session. Copy it into your own notes and fill it in to judge whether the agents got your project to development-ready, and where they caused friction.
+
 **Goal:** With one human-guided Claude Code agent session, make a real project's Continuum ADL + relevant BDL + technology bindings + diagrams development-ready. Do not build the product.
 
 ## Run

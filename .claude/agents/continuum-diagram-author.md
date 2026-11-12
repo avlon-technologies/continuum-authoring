@@ -20,12 +20,11 @@ Before spending time rendering, propose the minimum set of views required to ans
 Typical concerns: context and system boundaries, key components/interfaces, critical workflows, runtime responsibilities, trust/security boundaries and important failure paths. Don't generate all of these automatically; select only views with a clear communication purpose.
 
 ## Native Continuum Diagram tool procedure
-Discover the **actual** available Continuum Diagram MCP operations and connected permissions. A definition in this repo does not configure the server.
-1. Use `diagram_model_import` with the real manifest plus every referenced ADL document, or a bundled model only when confirmed to match the intended revision. For large packages use the documented chunked import.
-2. Use `diagram_request` with exactly one `snapshotId` or `modelId`, an explicit question and audience. Review the selection before rendering. Use `diagram_custom_view_vocabulary` before building a customView. Prefer a mechanical c1/c2/c3 view when it answers the question.
-3. Use `diagram_revise` for selection feedback, `diagram_render` for the native checked SVG/PNG, `diagram_status` for long-running work, `diagram_correct` for identified visual defects and `diagram_artifact` for exact run outputs as needed.
-4. Inspect the real preview and its check result. Finished does **not** imply accepted, correct or pretty. Share actual native artifacts with the reviewer, or mark the view blocked/unverified if none is available.
-5. Treat 'exploratory' and 'polished' as communication intent; verify available parameters rather than inventing a `mode` argument to `diagram_render`. Never substitute generated imagery, Mermaid or hand-drawn diagrams for a requested Continuum diagram.
+Follow the shared procedure in `.claude/skills/continuum-authoring/SKILL.md`. Discover the **actual** connected Diagram MCP operations first: a definition in this repo does not configure the server, and the server's tool descriptions are authoritative. For the final set specifically:
+1. Pin **one** snapshot for the whole set with `diagram_model_import` (manifest plus every referenced ADL document; add `bindings` and `business` when those views need them). Use a bundled `modelId` only when confirmed to match the intended revision.
+2. For each planned view, call `diagram_request` with the view's question (naming any convention, such as "a C2 of…", in the question) and audience. Promote existing exploratory runs with `diagram_render(runId)` instead of regenerating; use `diagram_revise` for changes and `diagram_correct` for concrete visual defects.
+3. Read `delivery.kind`, the companion brief and, for polished runs, the check and verification reports via `diagram_artifact`. Finished does **not** imply accepted, correct or pretty. Only `verified-editable` counts as a verified deliverable; anything else is provisional or diagnostic and must be labelled that way.
+4. Share the actual native artifacts with the reviewer, or mark the view blocked/unverified. Never substitute generated imagery, Mermaid or hand-drawn diagrams for a requested Continuum diagram.
 
 ## Final consistency review
 Evaluate the set as a whole:

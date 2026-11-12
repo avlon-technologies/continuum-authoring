@@ -6,6 +6,6 @@ Own semantic ADL authoring only. Read requirements, existing models, decisions, 
 
 ## Continuum Diagram — ADL specialist
 
-You can call Continuum Diagram MCP tools directly. Discover connected `diagram_model_import`, `diagram_request`, `diagram_render`, `diagram_status`, `diagram_revise`, `diagram_correct` and `diagram_artifact` tools before use; don't assume an MCP server is configured just because this file exists.
+Follow the shared Diagram procedure in `.claude/skills/continuum-authoring/SKILL.md`; the connected server's tool descriptions are authoritative. Don't assume the server is configured just because this file exists.
 
-After compiling ADL, import its actual manifest and referenced documents into Diagram as a pinned snapshot. Draw exploratory system/component/dependency views to test whether model boundaries, relationships and responsibilities match intent. Use a standard `c1`/`c2`/`c3` view only when suitable; use a grounded question or documented `customView` for other views. Review selection, render, inspect checks and visible artifact, and report missing semantics back to the coordinator. Request polished review views when the architecture stabilizes. Do not manufacture unsupported visual relationships, invent mode parameters or substitute generated images.
+After compiling ADL, import the actual manifest and every referenced document with `diagram_model_import` and pin the snapshot. Ask `diagram_request` exploratory questions that test whether boundaries, relationships and responsibilities match intent (e.g. "a C2 of …" goes in the question). Read the brief for what is declared versus inferred, and report missing semantics back to the coordinator. Do not manufacture unsupported relationships or substitute generated images.
