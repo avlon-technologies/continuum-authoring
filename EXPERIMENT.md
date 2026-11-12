@@ -6,10 +6,10 @@ A template for judging whether the agents got a project to development-ready, an
 
 ## Run
 1. Choose a real project and write the goal in two or three sentences before starting.
-2. Start the coordinator and work naturally, intervening only on consequential decisions.
+2. Start the coordinator and work naturally, intervening only on consequential decisions. Let the coordinator author directly and invoke specialists only when their bounded contribution demonstrably helps.
 3. Keep the session transcript; it is the main evidence.
 
-## Assess the artifacts
+## Assess convergence\nRecord approximate numbers of specialist delegations, semantic edit loops, package rebuilds, repins, diagram snapshots and major defects identified before versus after the first baseline. Do not introduce mandatory multi-agent review cycles solely to make these metrics look good. Compare against a previous single-agent experience as an informal reference, not a controlled benchmark.\n\n## Assess the artifacts
 Record the route (MCP only, or MCP + CLI) and the readiness level the handoff claims (skill §9). For each of ADL, BDL, bindings, scenarios, diagrams and the development package, record PASS / PARTIAL / BLOCKED / NOT CHECKED, the tool or command that verified it, and the remaining gaps. Green ADL compilation alone is not developer readiness.
 
 ## Read what each subagent did
@@ -20,7 +20,7 @@ For every subagent call in the transcript, check:
 - **Stalls and loops:** repeated failed compiles, repeated identical tool calls, paid diagram runs that were duplicated.
 - **Ownership:** did anyone edit a file they do not own?
 
-Turn each failure into one concrete change to an agent definition or the skill (an instruction, an example URI, a failure-playbook row), then re-run. The bar for a release is two consecutive clean runs at the highest readiness level the route allows, judged row by row against the readiness table in skill §9, with every gap labelled and no major friction.
+Turn each failure into one concrete change to an agent definition or the skill (an instruction, an example URI, a failure-playbook row), then re-run. For a release, seek repeatable end-to-end outcomes at the highest readiness level the route allows, with no unresolved major contradictions, all gaps labelled and tolerable user friction. Multiple clean runs can increase confidence, but do not create mandatory reviewer loops within a single run.
 
 ## Experience discovery and independent consumer assessment
 
