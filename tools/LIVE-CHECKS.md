@@ -1,13 +1,23 @@
-# Live verification
+# Live verification — architecture-intent experiment
 
-`node tools/check.mjs` is static: it compares the documents with each other and with `tools/surface.json`, and never contacts a server. This procedure is the live half. Run it before each release and whenever the servers change, in Claude Code with both Continuum servers connected, then update `tools/surface.json` (`verified`, `tools`, `uris`, `sections`, `limits`, `liveProbes`) and rerun the static check.
+`node tools/check.mjs` is a **static** consistency check of the branch's agent roster, active instructions, required files, tracked Markdown links and canonical experiment paths. It does not validate architectural meaning or query hosted tools.
 
-1. **Surface.** List the tools whose names start with `continuum_` and `diagram_`; replace `tools`. Run `continuum_knowledge` with `mode: "index"`; replace `uris` with the documents the repository cites. For each guide in `sections`, run `index` with its `uri` and replace its section ids.
-2. **Limits.** Call `diagram_models` and record its `limits` (snapshots, lifetime, files, inline size). Create a workspace with `continuum_workspace_create` and record its `lifecycle` (idle expiry, what loses it sooner); discard it.
-3. **Routes.** With a small model in a workspace, re-run every probe in `liveProbes` and record the date and result:
-   - compile in a workspace; `continuum_query` and `continuum_preview` with `workspace`;
-   - `continuum_process_graph` with `workspace` (refused on 2026-11-12; if it now answers, update skill §3);
-   - `continuum_apply` with `workspace`, `manifestPath`, `changePath` and a base64 `.adl-change` in `files`;
-   - a `.bdl` created in the workspace, then `continuum_business_compile` with `workspace` and `artifact`;
-   - when diagram quota allows, `diagram_model_import` with `bindings` (documents and vocabularies, each also in `files`), which has not yet been exercised.
-4. **Contracts.** Re-read the guide sections the agents rely on and compare them with the instructions: `continuum://guides/package-formats` §1, §2 and §5, `continuum://guides/development-package` §2 and §4.5, `continuum://guides/development-workflow` §3.5, and the "Beyond the ADL" section of `continuum-host://guide/agentic-authoring`. A contradiction is fixed in the skill or agent file, never by editing the record to match.
+## Before the run
+1. From `experiment/architecture-intent`, run `node tools/check.mjs` and resolve failures.
+2. In a **fresh** Claude Code session, confirm `intent-orchestrator` and `intent-author` are discoverable; check no legacy project agent is present. User-global agents may still exist and are outside repository control.
+3. Confirm the Continuum and Continuum Diagram MCP connections are available and authenticated. Consult live `continuum_knowledge` for current ADL/BDL/bindings/decisions/principles specifications and available tools.
+4. Use `tools/surface.json` only as a **dated historical tool inventory**, not as current proof. Update it only after actual live verification; never fabricate results.
+
+## During treatment
+- Check the specialist can return consequential questions and the orchestrator can answer in a separate context without simulated approval.
+- Confirm treatment author never reads the control architecture; use a fresh worktree and only the frozen Recall vision as product input.
+- Compile/validate new ADL/BDL and check bindings/decisions/principles with available tools. Record actual verdicts and limitations.
+- Render grounded diagrams if tools permit; distinguish provisional from verified.
+- Confirm progress milestones and decision provenance are recorded.
+
+## After treatment
+- Freeze output before accessing control.
+- Assemble two anonymized architecture-only packets and run separate independent reviewers with the same rubric and questions.
+- Report artifact scores, material comprehension errors, change-impact reasoning, effort, limitations and final comparison verdict.
+
+**Not verified by static checks:** live MCP functionality, Claude Code agent discovery, compiler legality, correctness of architecture, evaluator independence, or comparative outcomes. Do not claim these without running them.
