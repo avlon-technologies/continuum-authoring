@@ -8,7 +8,10 @@ Every continuum-* agent reads this file first. It defines the team, who owns whi
 
 ## 1. Ground rules
 
-- **Tools judge deterministic legality, not architecture fitness.** Legality comes from `continuum_compile` / `continuum_business_compile` / `continuum package build|check`, never from agent confidence. `ok: true` means the request was served; read the verdict (`answer.compiled`, `answer.exitCode`, `answer.attestation`; `verdict.compiled` on workspaces).
+- **Tools judge deterministic legality, not architecture fitness.** Legality comes from the Continuum compilers (via CLI or MCP) and `continuum package build|check`, never from agent confidence. `ok: true` means only that the request was served. Read the verdict:
+  - ADL (`continuum_compile`): `answer.compiled`, `answer.exitCode`, `answer.attestation`, `changeState`; workspaces: `verdict.compiled`, `verdict.attested`.
+  - BDL (`continuum_business_compile`): `valid` and `ledger.completelyValidated`.
+  - CLI: the exit code (`0` valid / intact), plus `--json` for details.
 - **Never write syntax from memory.** Read the relevant guide or worked example (§3) before authoring a construct you have not compiled in this session.
 - **Never invent facts.** No invented requirements, repository evidence, ids, technologies or tool results. Ids come from `continuum_mint_ids` (ADL) or are authored explicitly (BDL); existing ids are preserved byte-for-byte.
 - **Never claim a check that did not run.** If a check cannot run, the artifact is **UNVERIFIED** or **NOT CHECKED**.
@@ -31,6 +34,14 @@ Every continuum-* agent reads this file first. It defines the team, who owns whi
 **The coordinator must be the main session** (`claude --agent continuum-architect`). Claude Code subagents cannot start other subagents, so a coordinator launched as a subagent cannot delegate. If you are the coordinator and the Agent tool is unavailable, say so and either do the specialist work yourself following the specialist definitions, or ask the human to restart with `--agent`.
 
 **Specialists coordinate through the architect.** Ownership restricts writes, not critique: each author can challenge assumptions in another discipline and route a concrete revision request via the coordinator. Use the researcher only for consequential external uncertainty, not routine syntax lookups.
+
+## 2a. Which route to use: CLI or MCP
+
+Both reach the same Host compiler. Choose by what is installed, once, at the start:
+
+- **CLI installed (`continuum --version` answers): prefer it for anything that reads files.** It reads the files from disk, so nothing is transcribed. Useful verbs: `continuum compile <manifest> --state --json`, `continuum apply <manifest> <change> --emit-source <dir>`, `continuum diff`, `continuum business compile|parse|inspect <file.bdl>`, `continuum status`, `continuum guard ci`, `continuum package build|check|run|bind refresh|realize`. CLI verdicts are full evidence.
+- **MCP only: put the drafts in a workspace.** `continuum_workspace_create` takes the manifest and documents as **plain text** (`documents` map or `documentList`), then `continuum_workspace_compile`, `_inspect`, `_gaps`, `_export`. The stateless tools (`continuum_compile`, `continuum_apply`, `continuum_query`, `continuum_business_compile`) take `files` as a map of path to **base64**. Never retype base64: produce it with a shell command (`base64 -w0 <file>`) and pass it unchanged, and only for small files. If a call fails with errors that do not match the source (unresolved base, illegal relationships in untouched code), suspect the payload before the model.
+- **Knowledge** (section 3) is always MCP: `continuum_knowledge` takes plain parameters.
 
 ## 3. Where knowledge lives
 
@@ -69,19 +80,35 @@ continuum/
     changes/<name>.adl-change         adl-author         change mode only
     <env>.adl-binding.json            tech-author        one per Environment
     <vocab>.vocabulary-claims.json    tech-author        one per vocabulary
-  business/<system>.bdl               bdl-author         one document, no manifest
-  business/<system>.realization.json  bdl-author         only when the correspondence is authored
+    <system>.bdl                      bdl-author         one document, no manifest; in the package inventory
+    <system>.realization.json         bdl-author         only when the correspondence is authored
   acceptance/scenarios/<name>.scenario.json   acceptance-author
   diagrams/README.md                  diagram-author     inventory: purpose, audience, snapshot, run, delivery.kind, status
   diagrams/<nn>-<slug>.{png,svg,md}   diagram-author
   gaps/<yyyy-mm-dd>-<slug>.md         whoever finds it   one gap per file; the architect triages
   decisions/                          human              ADRs are proposed via tools, accepted only by the human
+  ledger.json, history/, transitions/ lifecycle          accepted checkpoints and pending transitions; never edit by hand
   IMPLEMENTATION.md, BEHAVIOUR.md, README.md, PACKAGE.json,
   model/*.adl.txt, model/compile-proof.json, acceptance/README.md,
   acceptance/traces/, acceptance/run.mjs ...                    DERIVED
 ```
 
 `acceptance/adapter.mjs` belongs to the implementation, not to authoring.
+
+If the repository already keeps a file somewhere else (an older layout), **use the existing location** and say so in `ASSUMPTIONS`; never create a duplicate.
+
+### Lifecycle state: read it before changing anything
+
+A repository may hold an **accepted** state: `ledger.json`, checkpoints under `history/`, transitions under `transitions/`. Run `continuum status` (or read those files) first.
+- If `development-package.json` has `semantic.derivedFrom` and the ledger shows that change adopted, the **current state is that change's result B**. Treat it as `existing` mode at B.
+- Editing any authored file after acceptance makes the package drift from the accepted checkpoint. That is expected during authoring. Accepting the new state is a lifecycle transition the **human** performs (`continuum://guides/development-workflow`); agents only report that one is needed.
+
+### Building without stepping on each other
+
+`continuum package build` writes the DERIVED files in place, and there is no `--out`. So:
+- **Only the architect builds in place**, after all specialists in a round have returned.
+- A specialist that needs a build verdict copies `continuum/` to a scratch directory outside the repository and builds there, reporting the copy's path.
+- Specialists may run in parallel on the same tree. A check that fails because of a file you do not own is reported as such ("fails on X, owned by Y"), not fixed. Report verdicts for the state you actually checked.
 
 Keep files on disk as the source of truth. Native workspaces (`continuum_workspace_*`) are an optional scratchpad and are lost when the server scales down; if you use one, export after every compile you would not want to redo, and write the result back to disk.
 
@@ -105,7 +132,7 @@ Classify the work before authoring, and tell every specialist which mode applies
 | Mode | Input | ADL work | Key rule |
 |---|---|---|---|
 | **new** | goal, requirements, no model | author `model/<system>.adl` from the smallest compiling start | ids from `continuum_mint_ids` |
-| **existing** | a model already in `continuum/model/` | none, or gap-filling edits | preserve every id |
+| **existing** | a model already in `continuum/model/` (including one whose last change was adopted) | none, or gap-filling edits | preserve every id; the current state is the adopted result |
 | **change** | existing model + requested change | author `model/changes/<name>.adl-change` pinned to the current changeState | prove `apply(A, Δ) = B` with `continuum_apply`; bindings and scenarios target B |
 | **recover** | code but no model | evidence-backed recovery | cite evidence; unknown is a gap, not a guess |
 
@@ -135,11 +162,25 @@ STATUS:      PASS | PARTIAL | BLOCKED
 CHANGED:     path — one-line summary (one per file)
 EVIDENCE:    tool/command — verdict (e.g. continuum_compile — compiled, 0 errors, 2 warnings, attestation sha256:…)
 GAPS:        id — confirmed | needs-evidence | unknown | deferred | out-of-scope — one line — gaps/ file if written
+GAP-UPDATES: existing gaps/ file you do not own — the status change it needs and why
 ASSUMPTIONS: what you assumed because the brief or the model did not say
 QUESTIONS:   question — why it matters — recommended default
 DIAGRAMS:    snapshotId / runId — delivery.kind — what it shows (or "none")
 CHALLENGE:   largest important assumption, omission, or simpler option, with evidence and owning agent (or none)
 HANDOFF:     what the next specialist needs from you (ids, names, files)
+```
+
+### Gap files
+
+Write a `gaps/<yyyy-mm-dd>-<slug>.md` file only when the gap blocks implementation, needs a human decision, or will outlive this session; otherwise list it under `GAPS` only. Shape:
+
+```
+# Gap: <the fact the model does not settle>
+**Date:** yyyy-mm-dd · **Raised by:** <agent> · **Status:** open | resolved yyyy-mm-dd (<disposition>) · **Blocks:** <what, or nothing>
+## The fact the model does not settle
+## Evidence            (paths with line ranges, tool verdicts)
+## Options             (each with its consequence; the smallest change that would close it, with the state it pins)
+## Recommendation
 ```
 
 ## 7. Authoring protocol
@@ -173,6 +214,10 @@ HANDOFF:     what the next specialist needs from you (ids, names, files)
 | A scenario reference does not resolve | Fix the scenario if you own it; otherwise report the missing model element to the ADL author through the coordinator. |
 | A diagram returns `verification-failed` or `editable-verification-failed` | Read `failure`/the check report via `diagram_artifact`; present it as diagnostic, not deliverable. Retry once with `diagram_render`; then report. |
 | A long-running call returns `phase: "running"` | Poll `diagram_status`; recover a lost runId with `diagram_runs`. |
+| Diagram import refused `too-many` (live snapshot quota per account; there is no delete) | Return BLOCKED with the message; snapshots expire on their own. Write the planned view (question, audience, import parameters) so it can be run later. Do not reuse a snapshot unless `diagram_model_status` confirms it matches the current attestation. |
+| A tool call fails with errors unrelated to your change | Suspect a transcription or payload error first (section 2a); re-check with the CLI if installed before reporting a model defect. |
+| Repository docs name tools or parameters that do not exist | The server's tool descriptions win. Report the stale doc under `GAPS`. |
+| Another owner's file is modified mid-run | Leave it. Report checks it breaks as theirs, and keep your verdict scoped to your files. |
 
 ## 9. Continuum Diagram procedure
 
@@ -180,11 +225,11 @@ The coordinator, ADL, BDL, Technology and Diagram agents may all call the **conf
 
 The server's own tool descriptions are authoritative. If anything below disagrees with them, follow the server and report the discrepancy.
 
-**Pin a model.** `diagram_model_import` with the real `*.adl-manifest.json` plus every document it names (relative paths and text). It returns a `snapshotId`, or diagnostics and nothing else. Optionally attach `bindings` (`*.adl-binding.json` + vocabularies, one `environment`) so technology claims are checked, and `business` (one `.bdl`) so business questions are answered from BDL. Packages over the inline limit: `diagram_model_upload_begin` → `diagram_model_upload_chunk` → `diagram_model_upload_finish`. Re-import after every change you want reflected; record the `snapshotId`.
+**Pin a model.** `diagram_model_import` with the real `*.adl-manifest.json` plus every document it names, as text, with paths **relative to the manifest exactly as the manifest names them** (e.g. manifest path `architecture.adl-manifest.json`, file `architecture.adl`). It returns a `snapshotId`, or diagnostics and nothing else. Optionally attach `bindings` (`*.adl-binding.json` + vocabularies, and the brief's target `environment`; first confirm the binding's `base.canonicalModel` equals the current attestation, or the import fails) so technology claims are checked, and `business` (one `.bdl`) so business questions are answered from BDL. Packages over the inline limit: `diagram_model_upload_begin` → `diagram_model_upload_chunk` → `diagram_model_upload_finish`. Re-import after every change you want reflected; record the `snapshotId`.
 
 **Ask a question.** `diagram_request` with exactly one of `snapshotId` / `modelId`, a full `question` and an `audience`. A named convention ("a C2 of…", "a use-case view of…") goes **in the question**; there are no `view`, `viewpoint`, `customView`, `domain` or `path` inputs. Optional: `context`, `presentation`, and `rendering` (`exploratory` / `polished`) only to override what the words imply. Exploratory (default) returns a provisional image proposal at once; polished continues into editable SVG, verification against the model, bounded correction and a communication evaluation. "As it exists" draws established architecture only; "what should it support" draws proposals, marked as proposed.
 
-**Wait, look, say what it is.** Read `delivery.kind` (`provisional-image-proposal`, `verified-editable`, `editable-verification-failed`, `verification-failed`) and present the picture as exactly that. Read the brief (`diagram_artifact` → `selection-vN/brief.md`) for declared / inferred / speculative content, and for polished runs `render-vN/check-vN.md` and `render-vN/verification-reconstructed-vN.md`. Make sure the human can see the image; if the client did not display it, retrieve it or give the signed link.
+**Wait, look, say what it is.** Read `delivery.kind` (`provisional-image-proposal`, `verified-editable`, `editable-verification-failed`, `verification-failed`) and present the picture as exactly that. Read the brief (`diagram_artifact` → `selection-vN/brief.md`) for declared / inferred / speculative content, and for polished runs `render-vN/check-vN.md` and `render-vN/verification-reconstructed-vN.md`. Make sure the human can see the image; if the client did not display it, retrieve it or give the signed link. To save a deliverable, download its signed link (from the result or `diagram_status`) with `curl -o continuum/diagrams/<nn>-<slug>.png <link>`; SVG and reports come back from `diagram_artifact` as text you can write directly. Always record the runId so the artifact can be fetched again.
 
 **Iterate.** `diagram_revise(runId, notes)` for conversational changes; `diagram_render(runId)` for the polished, verified version of the current picture; `diagram_correct(runId, notes)` for concrete visual defects.
 

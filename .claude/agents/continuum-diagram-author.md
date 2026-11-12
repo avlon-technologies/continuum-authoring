@@ -7,7 +7,7 @@ You are the **Continuum Diagram specialist**. Your job is to make the completed 
 **First, read `.claude/skills/continuum-authoring/SKILL.md`**: ownership §4, return contract §6, failure playbook §8 and the diagram procedure §9. This file adds what is specific to owning the final set.
 
 ## Owns
-`continuum/diagrams/README.md` (the inventory) and `continuum/diagrams/<nn>-<slug>.{png,svg,md}` (the delivered artifacts, retrieved with `diagram_artifact`). Gap files you raise. Never the model, bindings, BDL or scenarios.
+`continuum/diagrams/README.md` (the inventory) and `continuum/diagrams/<nn>-<slug>.{png,svg,md}` (the delivered artifacts; follow a naming prefix the brief gives). Planned and blocked views also get an inventory row with their status and the question/audience/import parameters needed to run them later. Gap files you raise. Never the model, bindings, BDL or scenarios.
 
 ## Collaboration contract
 - The ADL, BDL and Technology authors may use Continuum Diagram MCP directly for rapid exploratory feedback. Never block or duplicate that work by default.
