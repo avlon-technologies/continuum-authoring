@@ -8,11 +8,11 @@ Every continuum-* agent reads this file first. It defines the team, who owns whi
 
 ## 1. Ground rules
 
-- **Tools judge, agents don't.** Legality comes from `continuum_compile` / `continuum_business_compile` / `continuum package build|check`, never from agent confidence. `ok: true` means the request was served; read the verdict (`answer.compiled`, `answer.exitCode`, `answer.attestation`; `verdict.compiled` on workspaces).
+- **Tools judge deterministic legality, not architecture fitness.** Legality comes from `continuum_compile` / `continuum_business_compile` / `continuum package build|check`, never from agent confidence. `ok: true` means the request was served; read the verdict (`answer.compiled`, `answer.exitCode`, `answer.attestation`; `verdict.compiled` on workspaces).
 - **Never write syntax from memory.** Read the relevant guide or worked example (§3) before authoring a construct you have not compiled in this session.
 - **Never invent facts.** No invented requirements, repository evidence, ids, technologies or tool results. Ids come from `continuum_mint_ids` (ADL) or are authored explicitly (BDL); existing ids are preserved byte-for-byte.
 - **Never claim a check that did not run.** If a check cannot run, the artifact is **UNVERIFIED** or **NOT CHECKED**.
-- **Never accept decisions.** Propose ADRs (`continuum_decision_propose`); acceptance, rejection and authority changes are the human's.
+- **Respect Host-governed authority.** Propose ADRs; agents may accept/reject/delegate only if explicitly authorized for that action and scope by current Host policy. Never present a proposal as accepted.
 - **Do not implement application code.** The deliverable is the development package, not the product.
 - **One owner per file** (§4). Do not edit a file you do not own; return the change you need instead.
 
@@ -26,10 +26,11 @@ Every continuum-* agent reads this file first. It defines the team, who owns whi
 | `continuum-tech-author` | Technology bindings and vocabulary claims, per Environment. |
 | `continuum-acceptance-author` | Executable acceptance scenarios traced to the model. |
 | `continuum-diagram-author` | The final diagram set: fidelity, consistency, communication. |
+| `continuum-researcher` | On-demand evidence and comparative research for material design choices; no model writes or decision authority. |
 
 **The coordinator must be the main session** (`claude --agent continuum-architect`). Claude Code subagents cannot start other subagents, so a coordinator launched as a subagent cannot delegate. If you are the coordinator and the Agent tool is unavailable, say so and either do the specialist work yourself following the specialist definitions, or ask the human to restart with `--agent`.
 
-**Specialists cannot talk to the human or to each other.** They finish their brief and return. Anything they need decided goes into `questions` in the return (§6), each with a recommended default; the coordinator asks the human or decides.
+**Specialists coordinate through the architect.** Ownership restricts writes, not critique: each author can challenge assumptions in another discipline and route a concrete revision request via the coordinator. Use the researcher only for consequential external uncertainty, not routine syntax lookups.
 
 ## 3. Where knowledge lives
 
@@ -84,7 +85,20 @@ continuum/
 
 Keep files on disk as the source of truth. Native workspaces (`continuum_workspace_*`) are an optional scratchpad and are lost when the server scales down; if you use one, export after every compile you would not want to redo, and write the result back to disk.
 
-## 5. Modes
+## 5. Experience-first discovery and on-demand research
+
+Before formalizing ADL, the coordinator discovers the desired user/developer experience: 2–3 representative journeys (one critical exception when relevant), what must be observable, stated constraints, inferred assumptions, and the 1–3 unknowns that could change significant architecture. Keep this concise in GOAL.md, not a new mandatory schema. Compare the simplest viable approach against material alternatives with **keep/cut reasoning**; explain what *does not* need modeling. Batch only consequential questions for the human. Agents should challenge assumptions, not merely transcribe them.
+
+Invoke `continuum-researcher` only when dated external evidence could materially alter an architectural choice. Give it a bounded decision question, constraints, acceptable sources, and stopping condition. Its cited findings are evidence, not accepted intent or independent proof of product quality.
+
+**Do not conflate:**
+1. **Legality**: compiler/package tool result against a pinned model/revision.
+2. **Architectural quality**: human/agent reasoning about tradeoffs, failure modes, simplicity, and missing assumptions.
+3. **Fitness and developer readiness**: user-visible behavior and a fresh developer's ability to implement without inventing major decisions.
+
+Attestation level does not rate architectural quality. A clean compile is necessary for a conforming model, not evidence that the right product was specified. A smaller model may be the better answer.
+
+## 5A. Modes
 
 Classify the work before authoring, and tell every specialist which mode applies.
 
@@ -107,7 +121,7 @@ State:          model revision / attestation / changeState, or "none yet"
 You own:        exact files you may create or edit
 Read-only:      files you may read but not change
 Decisions made: accepted choices you must respect (with source)
-Task:           the specific outcome wanted from this specialist
+Task:           specific outcome; one architectural challenge to investigate where applicable
 Out of scope:   what not to do
 Budget:         e.g. "at most 2 exploratory diagrams", "no CLI package build"
 ```
@@ -124,12 +138,13 @@ GAPS:        id — confirmed | needs-evidence | unknown | deferred | out-of-sco
 ASSUMPTIONS: what you assumed because the brief or the model did not say
 QUESTIONS:   question — why it matters — recommended default
 DIAGRAMS:    snapshotId / runId — delivery.kind — what it shows (or "none")
+CHALLENGE:   largest important assumption, omission, or simpler option, with evidence and owning agent (or none)
 HANDOFF:     what the next specialist needs from you (ids, names, files)
 ```
 
 ## 7. Authoring protocol
 
-1. **Discover.** Goals, existing `continuum/` content, implementation evidence, accepted decisions (`continuum_decision_list`), principles (`continuum_principle_list`), target environments, tool availability. Never invent requirements.
+1. **Discover and challenge.** User journeys, alternatives, stated/inferred facts, goals, existing `continuum/` content, implementation evidence, accepted decisions (`continuum_decision_list`), principles (`continuum_principle_list`), target environments, tool availability. Never invent requirements.
 2. **Read knowledge** for the constructs you will touch (§3).
 3. **Trace** goal → use case/behaviour → ADL element → binding → acceptance scenario. Every link that is missing is a gap.
 4. **ADL**: write on disk, compile with `continuum_compile`, repair from diagnostics, query/inspect, repeat in small steps.
@@ -138,7 +153,9 @@ HANDOFF:     what the next specialist needs from you (ids, names, files)
 7. **Acceptance scenarios** whose every reference resolves against the compiled model.
 8. **Package**: `continuum package build continuum` then `continuum package check continuum` (and `continuum package run` when an adapter exists). An MCP-only compile is not a package build.
 9. **Diagrams**: specialists draw exploratory views as feedback; continuum-diagram-author owns the final set (§9).
-10. **Report** PASS / PARTIAL / BLOCKED / NOT CHECKED with evidence for every artifact. Development-ready is a judgment supported by tool evidence, not a green compile.
+10. **Iterate and challenge.** ADL anchors downstream pins, but BDL discoveries, early acceptance and exploratory diagrams can reveal missing intent *before* the final model. Let authors critique across disciplines through the coordinator; preserve one writer per file. Repin all affected downstream artifacts after model changes.
+11. **Independent consumer review.** Have a fresh-context development agent (not an author) read only the delivery package/GOAL and explain key user journeys, expected behavior, and the top three decisions it would still have to invent. Route material gaps to their owners and review again. If isolation is impossible, mark SELF-REVIEW or NOT CHECKED, never independent. An independent review is an architectural judgment, not a compiler attestation.
+12. **Report** PASS / PARTIAL / BLOCKED / NOT CHECKED with evidence for every artifact. Development-ready is a judgment supported by tool evidence, not a green compile.
 
 ## 8. Failure playbook
 
@@ -150,6 +167,8 @@ HANDOFF:     what the next specialist needs from you (ids, names, files)
 | A construct is not covered by the guides | Read the normative section (`continuum://spec/syntax`, `continuum://spec/metamodel`); if still unclear, model less and record a gap. Never guess syntax. |
 | Model and code disagree | Recover/existing mode: the code is evidence of the implemented state; record the disagreement as a gap. Do not silently change either. |
 | A human decision is needed | Return it under `QUESTIONS` with a recommended default; continue with work that does not depend on it. |
+| External research is stale or contradictory | Record sources and dates, disagreement, uncertainty and a conservative recommendation; do not promote it to fact. |
+| Fresh consumer finds major unmade decisions | Route to the correct model owner and repeat targeted review; mark handoff PARTIAL until resolved or explicitly acknowledged. |
 | A binding is stale (attestation moved) | `continuum package bind refresh continuum`; without the CLI, report it stale. Never edit `base.canonicalModel` by hand. |
 | A scenario reference does not resolve | Fix the scenario if you own it; otherwise report the missing model element to the ADL author through the coordinator. |
 | A diagram returns `verification-failed` or `editable-verification-failed` | Read `failure`/the check report via `diagram_artifact`; present it as diagnostic, not deliverable. Retry once with `diagram_render`; then report. |

@@ -14,6 +14,7 @@ This repository is the authoring framework. It is not an example app, and it doe
 | [`continuum-tech-author`](.claude/agents/continuum-tech-author.md) | Technology bindings, environments, security, deployment. |
 | [`continuum-acceptance-author`](.claude/agents/continuum-acceptance-author.md) | Executable Given/When/Then acceptance scenarios traced to the model. |
 | [`continuum-diagram-author`](.claude/agents/continuum-diagram-author.md) | Owns the final diagram set: accuracy, cross-view consistency, communication. |
+| [`continuum-researcher`](.claude/agents/continuum-researcher.md) | On-demand research and comparison of consequential architecture alternatives. |
 | [`continuum-authoring` skill](.claude/skills/continuum-authoring/SKILL.md) | What every agent reads first: package layout and file ownership, brief/return contracts, where Continuum's documentation lives, failure playbook, Diagram procedure. |
 
 See also the [vision](VISION.md) and a [pilot template](EXPERIMENT.md) for evaluating a session.
@@ -42,7 +43,7 @@ See also the [vision](VISION.md) and a [pilot template](EXPERIMENT.md) for evalu
    cp -r continuum-authoring/.claude/agents continuum-authoring/.claude/skills <your-project>/.claude/
    ```
 
-   You can also open this repository directly in Claude Code to try it out. Run `/agents` to confirm the six agents are listed.
+   You can also open this repository directly in Claude Code to try it out. Run `/agents` to confirm the seven agents are listed.
 
 ## Usage
 
@@ -58,7 +59,7 @@ Then describe what you want, for example:
 
 > Author the architecture for this project to development-ready: ADL, relevant BDL, technology bindings for local development, acceptance scenarios, and Continuum diagrams. Do not implement the product. Show validation evidence, gaps, and an honest agent-experience retrospective.
 
-The coordinator checks which tools are available, surveys the repository, confirms the goal and consequential trade-offs with you, then briefs the specialists. Work lands in your repository's `continuum/` directory, with one owner per file (see the [skill](.claude/skills/continuum-authoring/SKILL.md#4-package-layout-and-ownership)). It closes with `continuum/HANDOFF.md`: an artifact/status/evidence table, open gaps and choices, the three biggest blockers and a retrospective.
+The coordinator checks tools, discovers user journeys and consequential assumptions, challenges material alternatives, then briefs the specialists. It invokes the researcher only when external evidence is worth gathering. Work lands in your repository's `continuum/` directory, with one owner per file (see the [skill](.claude/skills/continuum-authoring/SKILL.md#4-package-layout-and-ownership)). It closes with `continuum/HANDOFF.md`: an artifact/status/evidence table, open gaps and choices, the three biggest blockers and a retrospective.
 
 The agents read Continuum's specifications, guides and worked examples from the MCP server as they go, so they track the current language rather than a copy in this repository.
 
@@ -67,6 +68,10 @@ Diagram runs on the Continuum Diagram server are metered work, so the agents reu
 ## Diagram ownership
 
 Every authoring agent can use Continuum Diagram for fast exploratory feedback. The [Diagram Agent](.claude/agents/continuum-diagram-author.md) owns the **final diagram set**: it checks that the views agree with one another, cover the development-significant questions, communicate clearly to their intended audience and stay grounded in a pinned ADL model. Gaps go back to the relevant author rather than being invented in a picture. The coordinator keeps overall responsibility for development readiness.
+
+## Independent review and proportional modeling
+
+The coordinator requests a fresh-context developer-readiness review of the deliverable: can another agent explain the system and implement the user journeys without inventing major decisions? Record the top three gaps, route them to owners, and label reviews SELF-REVIEW when independent context is unavailable. Tool validity, architecture quality, and fitness are different claims. Only author additional BDL, views, or governance artifacts when their value is justified.
 
 ## Completion
 

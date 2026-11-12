@@ -22,6 +22,10 @@ For every subagent call in the transcript, check:
 
 Turn each failure into one concrete change to an agent definition or the skill (an instruction, an example URI, a failure-playbook row), then re-run. Two consecutive clean runs, where `continuum package check` passes, every gap is labelled and there is no major friction, is the bar for a release.
 
+## Experience discovery and independent consumer assessment
+
+Record the strongest previously unseen assumption discovered, meaningful design alternatives considered, and the modeling work deliberately skipped. Ask a fresh, non-author agent to read only the package and GOAL.md and explain behavior and its top three implementation-significant missing decisions. Report independent versus SELF-REVIEW, plus whether any research changed a decision and the cost of gathering it. Never grade model validity as proven product fitness.
+
 ## Agent interview
 Ask the coordinator at the end: What helped? What was confusing? Where did you have to guess? Which tools or documentation were missing? What are your **top 3 highest-impact fixes**? Would you judge the handoff development-ready, and what evidence supports that?
 

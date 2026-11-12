@@ -14,6 +14,9 @@ The deliverable is a **development-ready Continuum package**, not an implemented
 6. Authoring specialists draw exploratory native Continuum diagrams while reasoning; a dedicated Diagram Agent owns final cross-view accuracy, completeness, consistency and communication.
 7. Optimize human experience, not agent count or tool-call volume.
 
+## Design philosophy
+Start from the experience and challenge the assumptions before formalizing the semantic model. Human and agent can each originate or contest ideas; modeling must earn its cost. Research unfamiliar, consequential choices on demand. Never equate successful compilation or attestation with architecture quality or product fitness. A fresh developer-readiness review is the last check that the architecture communicates usable intent, not simply formal completeness.
+
 ## MVP
 One coordinator plus focused ADL, BDL, technology-binding and acceptance-scenario subagents, with a Diagram Agent responsible for the coherent final diagram set. Shared skills describe tool procedures. Use an existing repo as a target; do not invent an example product or write implementation code unless separately requested.
 
