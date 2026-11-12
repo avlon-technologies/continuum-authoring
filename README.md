@@ -1,29 +1,42 @@
 # Continuum Authoring — Architecture Intent Experiment
 
-**This is the experimental branch, not the completeness-oriented authoring release.** The original framework and seven-agent team remain on `main`.
+This **experimental branch** tests Continuum as a way for humans and AI to discover, describe, preserve and evolve a **shared architectural understanding**. It deliberately does **not** optimize for exhaustive development-ready specifications.
 
-## Purpose
-Test whether two independent participants can establish and preserve shared architectural understanding through focused conversation and concise Continuum artifacts, rather than generate an exhaustive development-ready specification.
+The original seven-agent, specification-completeness authoring framework remains on `main` and supplies the historical control.
 
-- **Orchestrator:** the main Claude Code session, acting as *simulated* human product and architecture authority for this experiment.
-- **Authoring specialist:** the only project subagent, `continuum-intent-author`, defined in `.claude/agents/continuum-intent-author.md`.
+## Two agents, distinct goals
 
-The original completeness-oriented agents have been removed from this branch to prevent accidental invocation. Do not import them from `main` or use the old readiness-oriented agent protocol as instructions.
+| Agent | Role | Optimizes for |
+|---|---|---|
+| [`intent-orchestrator`](.claude/agents/intent-orchestrator.md) | Main Claude Code agent, simulating the human architecture authority | Product outcomes, consequential choices, intent clarity, prompt decisions |
+| [`intent-author`](.claude/agents/intent-author.md) | Specialist that converses with the orchestrator and authors Continuum artifacts | Intent fidelity, semantic consistency, useful abstraction, interpretability, evolution reasoning and economy |
 
-## Start
-1. Check out `experiment/architecture-intent` in `continuum-authoring`.
-2. Start a fresh Claude Code session at this repository root. Confirm `continuum-intent-author` appears in `/agents`.
-3. Read [experiment/README.md](experiment/README.md), [experiment/RUNBOOK.md](experiment/RUNBOOK.md) and [experiment/QUALITY-RUBRIC.md](experiment/QUALITY-RUBRIC.md).
-4. Use the frozen `avlon-technologies/ai-recall` VISION.md as the treatment's only product input. Do not inspect its historical architecture.
-5. Run the orchestrator ↔ specialist conversation, author the new model under `experiment/runs/01/`, and compare against the frozen control using identical blind review tasks.
+The specialist recommends and challenges; the orchestrator decides or delegates. Both must distinguish approved choices from inferred assumptions.
 
-## What to optimize
-Intent fidelity; independent human/AI comprehension; consequential architectural structure and behavior; cross-artifact coherence; change-impact reasoning; information economy; reasonable authoring effort.
+## Run
 
-## Outputs
-Focused ADL, BDL, technology bindings, consequential decisions and principles, useful diagrams, decision provenance, progress reports, independent quality scores and a comparison verdict. No application implementation or exhaustive specification quota.
+```powershell
+cd C:\projects\avlon\continuum-authoring
+git fetch origin
+git switch experiment/architecture-intent
+claude --agent intent-orchestrator
+```
 
-## Boundaries
-This branch does not replace the original project vision on `main`. The old `.claude/skills/continuum-authoring/` and maintenance tooling may still exist as historical infrastructure; **do not treat their development-readiness goals or old agent routing as treatment instructions**. Consult current Continuum MCP tool/schema documentation for syntax. Legacy maintenance checks designed to require seven agents are not applicable to this experiment until adapted.
+Verify both project agents are discoverable. Read [the experiment runbook](experiments/architecture-intent/RUNBOOK.md) before starting. The [shared skill](.claude/skills/continuum-authoring/SKILL.md) defines the authoring protocol; the live Continuum MCP documentation is authoritative for tool syntax.
 
-**Status:** prepared; local agent discovery, Continuum access and the experiment run have not been verified.
+## What gets measured
+
+ADL, BDL, technology bindings, decisions and principles have distinct quality criteria. Independent reviewers test architectural comprehension, invariant preservation and change-impact reasoning. We compare those results and observed authoring effort against the **frozen original Recall package** using [one matched protocol](experiments/architecture-intent/COMPARISON-PROTOCOL.md). No winner is declared before both are evaluated.
+
+## Files
+
+- [Experiment overview](experiments/architecture-intent/README.md)
+- [Charter](experiments/architecture-intent/CHARTER.md)
+- [Agent contracts](experiments/architecture-intent/AGENT-CONTRACTS.md)
+- [Quality rubric](experiments/architecture-intent/QUALITY-RUBRIC.md)
+- [Progress contract](experiments/architecture-intent/PROGRESS-CONTRACT.md)
+- [Evaluator](experiments/architecture-intent/EVALUATOR.md)
+- [Runbook](experiments/architecture-intent/RUNBOOK.md)
+- [Live validation](tools/LIVE-CHECKS.md)
+
+**Status:** repository preparation only. No authoring run, local Claude Code smoke test or blind evaluation has been completed.
