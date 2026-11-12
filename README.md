@@ -1,81 +1,127 @@
 # Continuum Authoring
 
-Claude Code agents and a shared authoring skill for working with a human to create **development-ready Continuum architecture**: ADL (architecture), BDL (business model) where relevant, technology bindings, acceptance scenarios and Continuum diagrams.
+Claude Code agents that work with you to turn a product idea or an existing codebase into a **development-ready Continuum architecture**: a compiled architecture model, a business model where it helps, technology bindings, executable acceptance scenarios and grounded diagrams, ready to hand to a developer or a coding agent.
 
-This repository is the authoring framework. It is not an example app, and it does not implement your product.
+This repository is the authoring framework. It does not implement your product.
 
-## What's in it
+## What is Continuum?
 
-| File | Role |
-|---|---|
-| [`continuum-architect`](.claude/agents/continuum-architect.md) | Coordinator. Works with you on goals and consequential decisions, delegates to the specialists, owns overall readiness. |
-| [`continuum-adl-author`](.claude/agents/continuum-adl-author.md) | ADL: components, interfaces, dependencies, flows. |
-| [`continuum-bdl-author`](.claude/agents/continuum-bdl-author.md) | BDL: business entities, use cases, workflows, exceptions. |
-| [`continuum-tech-author`](.claude/agents/continuum-tech-author.md) | Technology bindings, environments, security, deployment. |
-| [`continuum-acceptance-author`](.claude/agents/continuum-acceptance-author.md) | Executable Given/When/Then acceptance scenarios traced to the model. |
-| [`continuum-diagram-author`](.claude/agents/continuum-diagram-author.md) | Owns the final diagram set: accuracy, cross-view consistency, communication. |
-| [`continuum-researcher`](.claude/agents/continuum-researcher.md) | On-demand research and comparison of consequential architecture alternatives. |
-| [`continuum-authoring` skill](.claude/skills/continuum-authoring/SKILL.md) | What every agent reads first: package layout and file ownership, brief/return contracts, where Continuum's documentation lives, failure playbook, Diagram procedure. |
+Continuum is a toolchain for writing architecture down precisely enough that tools can check it:
 
-See also the [vision](VISION.md) and a [pilot template](EXPERIMENT.md) for evaluating a session.
+- **ADL** (Architecture Definition Language) models the *system*: domains, services, messages, workflows, data ownership, dependencies. A compiler checks it and attests the exact revision.
+- **BDL** (Business Definition Language) models the *business*: what the organization does and means, independent of any system.
+- A **development package** bundles the goal, the compiled ADL, technology **bindings** per environment (which runtime, which store) and **acceptance scenarios** into an implementation handoff.
+- **Continuum Diagram** draws pictures grounded in the compiled model, labelled with how much of each picture the model actually establishes.
 
-## Prerequisites
+The specifications, guides and worked examples are served by the Continuum MCP server; the agents read them as they work.
 
-- [Claude Code](https://claude.com/claude-code).
-- The two Continuum MCP servers (below). They are public and use OAuth sign-in.
-- Optional: the `continuum` CLI, which is needed to build and check a development package (`continuum package realize/build/check`). It is not yet publicly distributed. Without it, the agents still author and compile models over MCP, but they mark package-level results **UNVERIFIED** instead of claiming readiness.
+## What you need
+
+| | Needed for | How to get it |
+|---|---|---|
+| [Claude Code](https://claude.com/claude-code) | everything | install it |
+| **Continuum access** | both MCP servers | access is **by invitation** during the preview: [open an issue titled "Access request"](https://github.com/avlon-technologies/continuum-authoring/issues/new?title=Access%20request) |
+| Continuum MCP server | authoring and compiling ADL and BDL, knowledge | `https://mcp.continuum.dev.avlon.ca/mcp` (production) |
+| Continuum Diagram server | diagrams | `https://diagram.continuum.dev.avlon.ca/mcp` (production) |
+| `continuum` CLI (optional) | building and checking the development package | not publicly distributed yet |
+
+**Cost.** Continuum is a free preview. Usage is rate-limited: notably, the Diagram server keeps at most 16 live model snapshots per account, with no delete; they expire on their own. The agents share one snapshot per model revision and reuse diagram runs to stay within the limit. Claude Code usage is billed by Anthropic as usual.
+
+### What you get with and without the CLI
+
+The MCP servers handle authoring, compiling, querying and change-proving for ADL and BDL, plus diagrams. Three things exist only in the CLI today: validating bindings, validating scenarios, and building and checking the package.
+
+| | MCP only (public default) | MCP + CLI |
+|---|---|---|
+| ADL model, compiled and attested | yes | yes |
+| Architecture changes proved (`apply(A, Δ) = B`) | yes | yes |
+| BDL model, compiled | yes | yes |
+| Diagrams | yes | yes |
+| Bindings and scenarios | drafted; references checked one by one; **UNVERIFIED** | validated by the package build |
+| Development package built and checked | no | yes |
+| Highest honest result | **Authored — package UNVERIFIED** | **Development-ready** |
+
+The agents tell you at the start which route you are on, and they never claim a check that did not run. The details are in the [skill's tool-route table](.claude/skills/continuum-authoring/SKILL.md#3-tool-routes-mcp-first-cli-optional).
 
 ## Setup
 
-1. **Connect the MCP servers** (once per machine; use `--scope project` instead to share the config with your team through `.mcp.json`):
+1. **Connect the MCP servers** (once per machine; add `--scope project` to share them with your team through `.mcp.json`):
 
    ```sh
    claude mcp add --transport http continuum https://mcp.continuum.dev.avlon.ca/mcp
    claude mcp add --transport http continuum-diagram https://diagram.continuum.dev.avlon.ca/mcp
    ```
 
-   Then run `/mcp` inside Claude Code and sign in to each server when prompted.
+   Start Claude Code, run `/mcp`, and sign in to each server with the account you were invited with.
 
-2. **Add the agents and skill to your project.** Copy this repository's `.claude/agents/` and `.claude/skills/` folders into the root of the repository you want to architect, merging them with any existing `.claude/` folder:
+2. **Add the agents and skill to your project:**
 
    ```sh
    git clone https://github.com/avlon-technologies/continuum-authoring.git
+   mkdir -p <your-project>/.claude
    cp -r continuum-authoring/.claude/agents continuum-authoring/.claude/skills <your-project>/.claude/
    ```
 
-   You can also open this repository directly in Claude Code to try it out. Run `/agents` to confirm the seven agents are listed.
+   To use them in every project instead, copy the two folders into `~/.claude/`. In Claude Code, `/agents` should list seven `continuum-*` agents.
+
+3. **Permissions (optional).** Claude Code asks before each tool call. To approve the Continuum tools once for the project, add to `<your-project>/.claude/settings.json`:
+
+   ```json
+   {
+     "permissions": {
+       "allow": ["mcp__continuum", "mcp__continuum-diagram", "Bash(continuum:*)", "Bash(base64:*)"]
+     }
+   }
+   ```
+
+   The server names must match the names you used in step 1. File edits are still confirmed, and the agents write only under `continuum/`.
 
 ## Usage
 
-Start Claude Code **with the coordinator as the main session**, from your project:
+From your project, start Claude Code **with the coordinator as the main session**:
 
 ```sh
 claude --agent continuum-architect
 ```
 
-This matters: Claude Code subagents cannot start other subagents. If you instead ask a normal session to "use the continuum-architect agent", it runs as a subagent and cannot delegate to the specialists (it will tell you, and fall back to doing their work itself).
+This matters because Claude Code subagents cannot start other subagents. If you instead ask an ordinary session to "use the continuum-architect agent", it cannot delegate, and it will tell you so.
 
 Then describe what you want, for example:
 
-> Author the architecture for this project to development-ready: ADL, relevant BDL, technology bindings for local development, acceptance scenarios, and Continuum diagrams. Do not implement the product. Show validation evidence, gaps, and an honest agent-experience retrospective.
+> Author the architecture for this project to development-ready: ADL, relevant BDL, technology bindings for local development, acceptance scenarios, and Continuum diagrams. Do not implement the product. Show validation evidence and gaps.
 
-The coordinator checks tools, discovers user journeys and consequential assumptions, challenges material alternatives, then briefs the specialists. It invokes the researcher only when external evidence is worth gathering. Work lands in your repository's `continuum/` directory, with one owner per file (see the [skill](.claude/skills/continuum-authoring/SKILL.md#4-package-layout-and-ownership)). It closes with `continuum/HANDOFF.md`: an artifact/status/evidence table, open gaps and choices, the three biggest blockers and a retrospective.
+What happens:
 
-The agents read Continuum's specifications, guides and worked examples from the MCP server as they go, so they track the current language rather than a copy in this repository.
+1. The coordinator checks which servers and tools are available, surveys the repository, and asks you a few high-value questions about user journeys, constraints and costly-to-reverse choices. It challenges assumptions and suggests what does not need modeling.
+2. It briefs the specialists (ADL, BDL, bindings, scenarios, diagrams, and research only when outside evidence would change a decision) and relays their findings and questions to you. The specialists never talk to you directly.
+3. It shows you the diagrams, with their labels: a *provisional proposal* is for reaction; only a *verified* diagram is a deliverable.
+4. A fresh agent that wrote none of it reviews the result as a developer would and names the decisions it would still have to invent.
+5. Everything lands in your repository's `continuum/` directory, ending with `continuum/HANDOFF.md`: the readiness level reached, a status and evidence table, open gaps and choices, the biggest blockers and a retrospective.
 
-Diagram runs on the Continuum Diagram server are metered work, so the agents reuse and revise runs instead of re-rendering.
+## The agents
 
-## Diagram ownership
+| Agent | Role |
+|---|---|
+| [`continuum-architect`](.claude/agents/continuum-architect.md) | Coordinator and your only point of contact; owns the goal, readiness and the handoff. |
+| [`continuum-adl-author`](.claude/agents/continuum-adl-author.md) | The architecture model and changes to it. |
+| [`continuum-bdl-author`](.claude/agents/continuum-bdl-author.md) | The business model, when the business rules are the hard part. |
+| [`continuum-tech-author`](.claude/agents/continuum-tech-author.md) | Technology bindings per environment, evidenced from your repository. |
+| [`continuum-acceptance-author`](.claude/agents/continuum-acceptance-author.md) | Executable Given/When/Then acceptance scenarios traced to the model. |
+| [`continuum-diagram-author`](.claude/agents/continuum-diagram-author.md) | The final, consistent diagram set. |
+| [`continuum-researcher`](.claude/agents/continuum-researcher.md) | Optional: dated external evidence for a consequential choice. |
 
-Every authoring agent can use Continuum Diagram for fast exploratory feedback. The [Diagram Agent](.claude/agents/continuum-diagram-author.md) owns the **final diagram set**: it checks that the views agree with one another, cover the development-significant questions, communicate clearly to their intended audience and stay grounded in a pinned ADL model. Gaps go back to the relevant author rather than being invented in a picture. The coordinator keeps overall responsibility for development readiness.
+All of them follow one shared protocol, the [`continuum-authoring` skill](.claude/skills/continuum-authoring/SKILL.md): authority, communication, tool routes, file ownership, contracts, readiness levels and failure handling, each defined once. See also the [vision](VISION.md) and the [evaluation template](EXPERIMENT.md).
 
-## Independent review and proportional modeling
+## Known limitations
 
-The coordinator requests a fresh-context developer-readiness review of the deliverable: can another agent explain the system and implement the user journeys without inventing major decisions? Record the top three gaps, route them to owners, and label reviews SELF-REVIEW when independent context is unavailable. Tool validity, architecture quality, and fitness are different claims. Only author additional BDL, views, or governance artifacts when their value is justified.
+- Binding validation, scenario validation and the package build need the CLI, which is not public yet; MCP-only sessions stop at **Authored — package UNVERIFIED**.
+- The Diagram server's snapshot limit (16 live per account, no delete) can block new diagrams until older snapshots expire; the agents report this and record the planned views.
+- MCP workspaces are temporary; the agents keep files on disk as the source of truth and re-create a workspace when it expires.
+- The agents produce architecture, not code, and their judgments of quality and fitness are reasoning, not proof. Only the compilers' verdicts are proof, and only of legality.
 
-## Completion
+## Maintaining this repository
 
-Compilation is necessary, **not sufficient**. Development-ready requires a coherent goal, compiled ADL, compiled BDL when applicable, valid technology bindings, executable acceptance scenarios, native Continuum diagrams and a verified development package where CLI support is available. If a check cannot run, the artifact is marked **UNVERIFIED** and full readiness is not claimed.
+`node tools/check.mjs` checks that the agents, the skill and the README agree: agent names and tables, section references, return-contract fields, links, and known-stale terms. It also checks every Continuum tool name and knowledge URI cited against `tools/surface.json`, a snapshot of the live servers. CI runs it on every push. Refresh the snapshot when the servers change (instructions in that file).
 
 ## License
 

@@ -10,17 +10,17 @@ A template for judging whether the agents got a project to development-ready, an
 3. Keep the session transcript; it is the main evidence.
 
 ## Assess the artifacts
-For each of ADL, BDL, bindings, scenarios, diagrams and the development package, record PASS / PARTIAL / BLOCKED / NOT CHECKED, the tool or command that verified it, and the remaining gaps. Green ADL compilation alone is not developer readiness.
+Record the route (MCP only, or MCP + CLI) and the readiness level the handoff claims (skill §9). For each of ADL, BDL, bindings, scenarios, diagrams and the development package, record PASS / PARTIAL / BLOCKED / NOT CHECKED, the tool or command that verified it, and the remaining gaps. Green ADL compilation alone is not developer readiness.
 
 ## Read what each subagent did
 For every subagent call in the transcript, check:
-- **Brief:** did the coordinator send every field of the brief template (skill §6)? What was missing?
+- **Brief:** did the coordinator send every field of the brief template (skill §8)? What was missing?
 - **Return:** did the specialist end with the return block? Are the `EVIDENCE` lines real tool verdicts?
 - **Guessing:** where did it write syntax, ids or technologies without reading knowledge or querying the model?
 - **Stalls and loops:** repeated failed compiles, repeated identical tool calls, paid diagram runs that were duplicated.
 - **Ownership:** did anyone edit a file they do not own?
 
-Turn each failure into one concrete change to an agent definition or the skill (an instruction, an example URI, a failure-playbook row), then re-run. Two consecutive clean runs, where `continuum package check` passes, every gap is labelled and there is no major friction, is the bar for a release.
+Turn each failure into one concrete change to an agent definition or the skill (an instruction, an example URI, a failure-playbook row), then re-run. The bar for a release is two consecutive clean runs at the highest readiness level the route allows (skill §9): **Development-ready** with the CLI (`continuum package check` passes), or **Authored — package UNVERIFIED** with MCP only (ADL and BDL compile, every scenario reference confirmed by query, bindings pinned to the current attestation, nothing claimed as built). In both cases every gap is labelled and there is no major friction.
 
 ## Experience discovery and independent consumer assessment
 
