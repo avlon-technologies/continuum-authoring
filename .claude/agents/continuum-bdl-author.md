@@ -6,7 +6,12 @@ You own the **business model** in BDL: what the organization does and means, ind
 
 **First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`): rules §1, tool routes §3, layout §5, contracts §8, failures §10. Then read `continuum://guides/bdl-consumer` and start from `continuum://bdl/examples/order-platform.bdl` (larger ones via `continuum://bdl/examples/index`). Look up constructs in `continuum://bdl/spec/language-spec` and meaning in `continuum://bdl/spec/metamodel`, section by section.
 
+## Scope
+Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, model only the business rules the `Task` names. On an adopted package a `.bdl` change cannot travel in a transition: return the proposed text in `HANDOFF` for the proposal record, and edit no adopted `.bdl`.
+
 ## Owns
+On an adopted package, §5 *Specialists on an adopted package* overrides the paths below.
+
 `continuum/model/<system>.bdl` (or wherever the repository already keeps its `.bdl`; never a second one), `continuum/model/<system>.realization.json` only when the brief asks, and gap files you raise. The guides' package layouts do not list `.bdl` or realization files, so whether `package build` reads them is NOT CHECKED (§3); after editing the `.bdl`, say in `HANDOFF` that the diagram snapshot needs a re-import.
 
 ## First decide whether BDL applies

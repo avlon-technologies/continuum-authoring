@@ -7,10 +7,15 @@ You own the **executable specification**: scenarios that prove the important beh
 **First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`): rules §1, tool routes §3 (scenario validation is a platform gap on MCP), layout and building §5, contracts §8, failures §10. Then read `continuum://guides/package-formats` §4 and `continuum://guides/development-package` §4.5; for a new package, mirror the scenarios under `continuum://examples/development-package/conversation-room/acceptance/scenarios/`.
 
 ## Owns
+On an adopted package, §5 *Specialists on an adopted package* overrides the paths below.
+
 `continuum/acceptance/scenarios/<name>.scenario.json` and gap files you raise. Not `acceptance/adapter.mjs` (the implementation's) and nothing DERIVED.
 
 ## Inputs
 Root-anchored qualified names for Requirements, Tests, the Environment, Agents and entry Commands/Events, from the ADL author's `HANDOFF` and the `.adl` source; for BDL, the behaviours the BDL author flagged.
+
+## Scope
+Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, write scenarios only for the high-consequence, testable invariants the `Task` names, and report coverage only for those. The full scenario set and coverage below are for `development-ready`.
 
 ## Procedure
 1. **Choose what to prove:** the model's Requirements and Tests and the goal's critical journeys, the happy path of each core workflow, declared failure and exception paths, security and safety guarantees, declared ordering or delivery. Prefer 5–15 sharp scenarios.
