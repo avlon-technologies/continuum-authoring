@@ -13,7 +13,7 @@ Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, produc
 `continuum/diagrams/README.md` (the inventory) and `continuum/diagrams/<nn>-<slug>.*` (delivered files; follow a naming prefix the brief gives), and gap files you raise.
 
 ## Inputs
-From the brief: `State` (attestation and `snapshotId`), `Task` (audiences, their key questions, prior exploratory runIds), `Read-only` (model files, bindings, `.bdl`) and `Decisions made`. If audiences or questions are missing, infer them from `GOAL.md`, record the assumption, and continue.
+From the brief: `State` (attestation and `snapshotId`), `Task` (audiences, their key questions, prior exploratory runIds), `Read-only` (model files, bindings, `.bdl`) and `Decisions made`. If audiences or questions are missing, infer them from the intent record (`GOAL.md`, or on an adopted package the proposal record or transition `REASON.md`, §5), record the assumption, and continue.
 
 ## Plan before rendering
 Propose the minimum set of views that answers development-relevant questions. For each: audience, the question it answers and why it is needed, the elements and relationships that must be visible, the abstraction level and non-goals, and whether an existing run can be promoted or revised. Typical concerns are context and boundaries, key components and interfaces, critical workflows, runtime responsibilities, trust boundaries and important failure paths; choose only views with a clear purpose.

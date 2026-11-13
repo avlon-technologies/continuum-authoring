@@ -132,6 +132,8 @@ What happens:
 4. It classifies the important expectations as verifiable, indirectly testable or human judgment, and names the few worth verifying.
 5. It stops once the architecture is clear enough to proceed, and writes a short `continuum/HANDOFF.md`, including the effort spent. It offers development-ready mode but does not start it.
 
+**If your repository already has an adopted package** (a `continuum/ledger.json` with a current checkpoint), the conversation produces a *proposed change*, never an edit to what you adopted. The architecture goes in `continuum/model/changes/<name>.adl-change`, proven to apply to the adopted state. The decisions, rationale, open questions and verification opportunities go in `continuum/model/changes/<name>.proposal.md` beside it. `GOAL.md`, `HANDOFF.md`, the model, bindings and scenarios of the adopted package are left untouched, and its readiness claims keep holding for the adopted state. Adopting the change stays yours, through the existing transition lifecycle (`continuum icp init`, then `continuum icp ready`); a development-ready request on such a repository moves the proposal into that transition (its `REASON.md`, changed bindings and scenarios), checks it, and stops at your approval. It never adopts it.
+
 ### Development-ready (explicit request)
 
 > Author the architecture for this project to development-ready: ADL, relevant BDL, technology bindings for local development, acceptance scenarios, and Continuum diagrams. Do not implement the product. Show validation evidence and gaps.
