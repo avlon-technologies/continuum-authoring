@@ -85,7 +85,7 @@ Read with `continuum_knowledge`: `mode: "index"` lists every document (with a `u
 | Bindings and claims | `continuum://guides/package-formats` §2 and §3, `continuum://guides/development-package` §4.4; mirror `continuum://examples/order-platform.production.adl-binding.json` |
 | Acceptance scenarios | `continuum://guides/package-formats` §4, `continuum://guides/development-package` §4.5; mirror `continuum://examples/development-package/conversation-room/acceptance/scenarios/` |
 | Package layout, CLI and lifecycle | `continuum://guides/development-package`, `continuum://guides/client-install`, `continuum://guides/development-workflow` |
-| Choosing diagram views | `continuum://guides/atlas-viewpoints` |
+| Diagrams of any view | the Continuum Diagram server (§7); its tool descriptions are the procedure |
 | Worked examples (compile as written) | `continuum://examples/index` and the full package under `continuum://examples/development-package/conversation-room/` |
 
 ## 4. Package layout and lifecycle
