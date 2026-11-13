@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// STATIC consistency checks for the Continuum authoring agents. No dependencies, no network.
+// STATIC consistency checks for the continuum-architect agent and its skill. No dependencies, no network.
 // It compares the documents with each other and with tools/surface.json, a dated record of the
 // live servers. It cannot see the servers: live verification is the procedure in tools/LIVE-CHECKS.md.
 // Usage: node tools/check.mjs        (exit 1 on any failure)
@@ -20,10 +20,11 @@ const skill = read(SKILL);
 const agentFiles = readdirSync(join(root, AGENT_DIR)).filter((f) => f.endsWith('.md')).map((f) => `${AGENT_DIR}/${f}`);
 const docs = [SKILL, ...agentFiles, 'README.md', 'EXPERIMENT.md', 'VISION.md', 'tools/LIVE-CHECKS.md'];
 const text = Object.fromEntries(docs.map((p) => [p, read(p)]));
-const agentPath = (name) => `${AGENT_DIR}/continuum-${name}.md`;
 
-// 1. Agent frontmatter: name matches file name, description present, skill referenced.
+// 1. Installation: exactly one agent, the architect, with frontmatter naming it and pointing to the skill.
+const AGENT = `${AGENT_DIR}/continuum-architect.md`;
 const agentNames = [];
+if (agentFiles.length !== 1 || agentFiles[0] !== AGENT) fail(AGENT_DIR, `expected only continuum-architect.md, found ${agentFiles.join(', ') || 'none'}`);
 for (const f of agentFiles) {
   const fm = text[f].match(/^---\n([\s\S]*?)\n---\n/);
   if (!fm) { fail(f, 'missing frontmatter'); continue; }
@@ -31,15 +32,51 @@ for (const f of agentFiles) {
   const base = f.split('/').pop().replace(/\.md$/, '');
   if (name !== base) fail(f, `frontmatter name "${name}" does not match file name "${base}"`);
   if (!/^description:\s*\S/m.test(fm[1])) fail(f, 'frontmatter has no description');
-  if (!text[f].includes('.claude/skills/continuum-authoring/SKILL.md')) fail(f, 'does not point to the shared skill');
+  if (/^tools:/m.test(fm[1])) fail(f, 'the architect must keep the full tool set (no tools: line)');
+  if (!text[f].includes('.claude/skills/continuum-authoring/SKILL.md')) fail(f, 'does not point to the skill');
   agentNames.push(base);
 }
+if (!/^name:\s*continuum-authoring$/m.test(skill)) fail(SKILL, 'skill frontmatter name is not continuum-authoring');
 
-// 2. The team table in the skill and the agent table in the README list exactly the agents on disk.
-const tableAgents = (src) => new Set([...src.matchAll(/^\| \[?`(continuum-[a-z-]+)`/gm)].map((m) => m[1]));
-for (const [file, set] of [[SKILL, tableAgents(skill)], ['README.md', tableAgents(text['README.md'])]]) {
-  for (const a of agentNames) if (!set.has(a)) fail(file, `agent table is missing ${a}`);
-  for (const a of set) if (!agentNames.includes(a)) fail(file, `agent table lists ${a}, which has no definition`);
+// 2. No removed agent is named anywhere, except where the README tells upgraders to delete them.
+const removed = /continuum-(?:adl|bdl|tech|acceptance|diagram)-author|continuum-researcher/g;
+for (const f of docs) {
+  for (const line of text[f].split('\n')) {
+    if (removed.test(line) && !(f === 'README.md' && /earlier version/.test(line))) fail(f, `names a removed agent: ${line.trim().slice(0, 80)}`);
+    removed.lastIndex = 0;
+  }
+}
+
+// 2b. The mode rules are stated where the agent reads them.
+for (const [needle, where] of [
+  ['Every session is intent-first unless the human explicitly asks for development-ready output', SKILL],
+  ['applies **only** when development-ready output was explicitly requested', SKILL],
+  ['Never edit an adopted file to record a proposal', SKILL],
+  ['No in-place maintenance', SKILL],
+  ['Never perform or claim them', SKILL],
+  ['## 5. Intent-first authoring (the default)', SKILL],
+  ['## 8. Development-ready mode', SKILL],
+]) {
+  if (!text[where].includes(needle)) fail(where, `missing rule: "${needle}"`);
+}
+
+// 2c. README permission example: parses, allows nothing broad, denies every human-only act.
+{
+  const readme = text['README.md'];
+  const fence = '```json\n';
+  const at = readme.indexOf(fence);
+  let perms;
+  try { perms = JSON.parse(readme.slice(at + fence.length, readme.indexOf('```', at + fence.length))).permissions; } catch (e) { fail('README.md', `permission example does not parse: ${e.message}`); }
+  if (perms) {
+    const okAllow = /^(mcp__[A-Za-z_-]+__\*|(Bash|PowerShell)\((continuum (--version|status \*|compile \*|apply \*|preview \*|diff \*|package check \*|icp check \*|icp state \*|icp ready \* --no-execute)|base64 \*)\))$/;
+    for (const r of perms.allow) if (!okAllow.test(r)) fail('README.md', `permission example allows something broad or unexpected: ${r}`);
+    const acts = ['icp approve', 'icp accept', 'icp adopt', 'icp reject', 'icp abandon', 'icp supersede', 'icp delete', 'ledger record', 'package accept',
+      ...['accept', 'reject', 'revoke', 'supersede', 'delegate', 'govern'].map((v) => `decision ${v}`),
+      ...['activate', 'approve', 'deny', 'reject', 'revoke', 'supersede', 'retire', 'delegate', 'govern'].map((v) => `principle ${v}`)];
+    for (const shell of ['Bash', 'PowerShell']) for (const a of acts) if (!perms.deny.includes(`${shell}(continuum ${a} *)`)) fail('README.md', `permission example does not deny ${shell}(continuum ${a} *)`);
+    const servers = [...new Set(perms.allow.filter((r) => r.startsWith('mcp__') && !/diagram/i.test(r)).map((r) => r.replace(/\*$/, '')))];
+    for (const p of servers) for (const t of ['accept', 'reject', 'supersede', 'revoke']) if (!perms.deny.includes(`${p}continuum_decision_${t}`)) fail('README.md', `permission example allows ${p}* but does not deny ${p}continuum_decision_${t}`);
+  }
 }
 
 // 3. Section references. "`<uri>` §N", "§N–§M" after a URI, and "<guide short name> §N" must be
@@ -68,24 +105,6 @@ for (const f of docs) {
     if (consumed.get(f).has(m.index)) continue;
     if (/`[^`]*\.(md|json)`\s*$/.test(text[f].slice(Math.max(0, m.index - 60), m.index))) continue; // a file's own §
     if (!sections.has(m[1])) fail(f, `§${m[1]} is not a section of the skill`);
-  }
-}
-
-// 4. Return-contract and brief field names used anywhere exist in the canonical blocks.
-const block = (title) => skill.match(new RegExp(`\\*\\*${title}\\*\\*[\\s\\S]*?\`\`\`\\n([\\s\\S]*?)\`\`\``))?.[1];
-const fieldsOf = (b, re) => new Set(b ? [...b.matchAll(re)].map((m) => m[1]) : []);
-const fields = fieldsOf(block('Return'), /^([A-Z][A-Z-]+):/gm);
-const briefFields = fieldsOf(block('Brief'), /^([A-Z][a-z-]+(?: [a-z-]+)*):/gm);
-if (!fields.size) fail(SKILL, 'could not find the return block');
-if (briefFields.size < 12) fail(SKILL, 'could not find the brief block');
-const words = new Set(['PASS', 'PARTIAL', 'BLOCKED', 'NOT', 'CHECKED', 'UNVERIFIED', 'SELF-REVIEW', 'CLI', 'MCP', 'ADL', 'BDL', 'ADR', 'ADRS', 'PNG', 'SVG', 'JSON', 'URL']);
-const inlineBriefs = new Set(['Decision', 'Alternatives', 'Constraints', 'Sources', 'Stop when']);
-for (const f of docs) {
-  for (const m of text[f].matchAll(/`([A-Z][A-Z-]{3,})(:[^`]*)?`/g)) {
-    if (!fields.has(m[1]) && !words.has(m[1])) fail(f, `\`${m[1]}\` is not a field of the return contract`);
-  }
-  for (const m of text[f].matchAll(/brief(?:'s|s'| field)? `([A-Z][a-z-]+(?: [a-z-]+)*)`/g)) {
-    if (!briefFields.has(m[1]) && !inlineBriefs.has(m[1])) fail(f, `brief field \`${m[1]}\` is not in the brief template`);
   }
 }
 
@@ -128,19 +147,6 @@ for (const f of docs) {
   }
 }
 
-// 9. Ownership: every file the skill's §5 layout assigns to an agent is named in that agent's file.
-const layout = skill.match(/## 5\.[\s\S]*?```\n([\s\S]*?)```/)?.[1] ?? '';
-const norm = (s) => s.replace(/<[^>]+>/g, '').replace(/\*/g, '');
-let owned = 0;
-for (const m of layout.matchAll(/^\s+(\S+?),?\s+(architect|[a-z]+-author)\b/gm)) {
-  const file = agentPath(m[2]);
-  if (!text[file]) { fail(SKILL, `§5 layout names owner ${m[2]}, which has no definition`); continue; }
-  const key = norm(m[1]);
-  if (!norm(text[file]).includes(key)) fail(file, `§5 assigns ${m[1]} to ${m[2]}, but this file never names it`);
-  owned++;
-}
-if (owned < 10) fail(SKILL, `could read only ${owned} owned paths from the §5 layout`);
-
 // 10. Quoted limits agree with the dated record.
 const L = surface.limits;
 const limitPatterns = [
@@ -169,4 +175,4 @@ if (failures.length) {
   console.error(`static check failed (${failures.length}):\n- ${failures.join('\n- ')}`);
   process.exit(1);
 }
-console.log(`static check passed: ${agentNames.length} agents, ${sections.size} skill sections, ${fields.size} return fields, ${briefFields.size} brief fields, ${owned} owned paths; live surface recorded ${surface.verified} (${age} days ago, not re-verified by this check)`);
+console.log(`static check passed: ${agentNames.length} agent (${agentNames.join(', ')}), ${sections.size} skill sections, permission example checked; live surface recorded ${surface.verified} (${age} days ago, not re-verified by this check)`);
