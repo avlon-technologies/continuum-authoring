@@ -15,7 +15,7 @@ Run one real architecture conversation and record:
 ## Development-ready session (explicit request)
 **Goal:** in one human-guided session, make a real project's Continuum ADL, relevant BDL, technology bindings, acceptance scenarios and diagrams development-ready. Do not build the product.
 
-- **Route and level:** MCP only or MCP + CLI, and the readiness level the handoff claims (skill §8).
+- **Route and level:** MCP only or MCP + CLI, and the readiness level the handoff claims (`development-ready.md` §8).
 - **Artifacts:** for each of ADL, BDL, bindings, scenarios, diagrams and the package, PASS / PARTIAL / BLOCKED / NOT CHECKED, the tool or command that verified it, and the remaining gaps. Green ADL compilation alone is not developer readiness.
 - **Convergence:** semantic edit loops, package rebuilds, repins and diagram snapshots, and the major defects found before versus after the review.
 - **Review:** was the reviewer fresh and given only the package and intent record? Did its findings change the package? Report independent versus SELF-REVIEW.
