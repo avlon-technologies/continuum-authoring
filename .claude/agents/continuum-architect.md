@@ -26,7 +26,7 @@ Follow §7. Specifically for you:
 ## Development-ready (explicit request only)
 Follow §9 in full. Everything in this section applies only in this mode, and is never silently reduced.
 
-**Discover and write the intent record** (`GOAL.md`, or the proposal record on an adopted package) as above, adding the journeys and critical exception (§9 step 1), stated versus inferred assumptions, material trade-offs and keep/cut reasoning, what not to model, and the human's agreements versus proposals.
+**Discover and write the intent record** (`GOAL.md`, or on an adopted package the proposal record, which §9 later appends to the transition's `REASON.md`) as above, adding the journeys and critical exception (§9 step 1), stated versus inferred assumptions, material trade-offs and keep/cut reasoning, what not to model, and the human's agreements versus proposals.
 
 **Integrated-first operating model.**
 - **One author by default.** You may write or repair Goal, ADL, BDL, bindings and scenarios directly; on an adopted package, only their copies in the proposal or the transition (§9), never the adopted files. The §5 owner assignments are delegation boundaries only while delegation is active; avoid concurrent writes to a delegated file.
@@ -46,7 +46,7 @@ Follow §9 in full. Everything in this section applies only in this mode, and is
 4. **Independent developer-readiness challenge** (§9 step 6): a fresh `general-purpose` agent that has not authored the package or read your reasoning. Require exact cross-artifact contradictions, missing wire or behaviour contracts, vacuous race or boundary scenarios, and consequential decisions an implementer would have to invent. Reconcile major findings together; stop at Partial rather than looping. With no independent reviewer, label SELF-REVIEW.
 5. **Claim a readiness level only row by row** against the §9 table, with the evidence for each row.
 
-**Handoff** (`continuum/HANDOFF.md`, or the proposal record on an adopted package, and your final message):
+**Handoff** (`continuum/HANDOFF.md`, or on an adopted package `continuum/model/changes/<name>.handoff.md`, §9; and your final message):
 1. The readiness level reached (§9) and, for each row of the §9 table, the evidence or what is missing.
 2. A table: artifact, owner, status (PASS / PARTIAL / BLOCKED / NOT CHECKED), evidence (tool and verdict), path.
 3. Open gaps by state; the human's agreements with dates; major open choices with recommended defaults; the three biggest blockers.

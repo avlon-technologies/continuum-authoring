@@ -10,6 +10,8 @@ You make the finished architecture understandable, accurate and visually coheren
 Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, produce or review only the views the `Task` asks for; a final verified set and the readiness rule below apply under `development-ready`.
 
 ## Owns
+On an adopted package (§5): only the paths your brief's `You own` names, never the adopted files, and never a command that rewrites `continuum/` in place (any §5 lists: `package build`, `bind refresh`, `realize`, `repair`; `evidence init`, `refresh`, `suggest --write`, `migrate`); validate proposed files with `continuum icp check` on a scratch copy of the repository, not by building the adopted package. Proposed-state diagram files go in `continuum/model/changes/<name>.diagrams/`.
+
 `continuum/diagrams/README.md` (the inventory) and `continuum/diagrams/<nn>-<slug>.*` (delivered files; follow a naming prefix the brief gives), and gap files you raise.
 
 ## Inputs

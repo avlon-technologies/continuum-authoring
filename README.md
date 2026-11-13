@@ -99,12 +99,40 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
    ```json
    {
      "permissions": {
-       "allow": ["mcp__continuum", "mcp__continuum-diagram", "Bash(continuum:*)", "Bash(base64:*)"]
+       "allow": [
+         "mcp__continuum__*", "mcp__continuum-diagram__*",
+         "Bash(continuum --version)", "Bash(continuum status *)", "Bash(continuum compile *)",
+         "Bash(continuum apply *)", "Bash(continuum preview *)", "Bash(continuum diff *)",
+         "Bash(continuum package check *)", "Bash(continuum icp check *)",
+         "Bash(continuum icp state *)", "Bash(continuum icp ready * --no-execute)", "Bash(base64 *)"
+       ],
+       "deny": [
+         "Bash(continuum icp approve *)", "Bash(continuum icp accept *)", "Bash(continuum icp adopt *)",
+         "Bash(continuum icp reject *)", "Bash(continuum icp abandon *)", "Bash(continuum icp supersede *)",
+         "Bash(continuum icp delete *)", "Bash(continuum ledger record *)", "Bash(continuum package accept *)",
+         "Bash(continuum decision accept *)", "Bash(continuum decision reject *)", "Bash(continuum decision revoke *)",
+         "Bash(continuum decision supersede *)", "Bash(continuum decision delegate *)", "Bash(continuum decision govern *)",
+         "Bash(continuum principle activate *)", "Bash(continuum principle approve *)", "Bash(continuum principle deny *)",
+         "Bash(continuum principle reject *)", "Bash(continuum principle revoke *)", "Bash(continuum principle supersede *)",
+         "Bash(continuum principle retire *)", "Bash(continuum principle delegate *)", "Bash(continuum principle govern *)",
+         "PowerShell(continuum icp approve *)", "PowerShell(continuum icp accept *)", "PowerShell(continuum icp adopt *)",
+         "PowerShell(continuum icp reject *)", "PowerShell(continuum icp abandon *)", "PowerShell(continuum icp supersede *)",
+         "PowerShell(continuum icp delete *)", "PowerShell(continuum ledger record *)", "PowerShell(continuum package accept *)",
+         "PowerShell(continuum decision accept *)", "PowerShell(continuum decision reject *)", "PowerShell(continuum decision revoke *)",
+         "PowerShell(continuum decision supersede *)", "PowerShell(continuum decision delegate *)", "PowerShell(continuum decision govern *)",
+         "PowerShell(continuum principle activate *)", "PowerShell(continuum principle approve *)", "PowerShell(continuum principle deny *)",
+         "PowerShell(continuum principle reject *)", "PowerShell(continuum principle revoke *)", "PowerShell(continuum principle supersede *)",
+         "PowerShell(continuum principle retire *)", "PowerShell(continuum principle delegate *)", "PowerShell(continuum principle govern *)",
+         "mcp__continuum__continuum_decision_accept", "mcp__continuum__continuum_decision_reject",
+         "mcp__continuum__continuum_decision_supersede", "mcp__continuum__continuum_decision_revoke"
+       ]
      }
    }
    ```
 
-   - The names must match the server names you chose in step 1. If you connected the servers as claude.ai connectors instead, the prefixes are `mcp__claude_ai_Continuum_Architect` and `mcp__claude_ai_Continuum_Diagram`.
+   - The names must match the server names you chose in step 1. If you connected the servers as claude.ai connectors instead, the prefixes are `mcp__claude_ai_Continuum_Architect` and `mcp__claude_ai_Continuum_Diagram`; rename the deny entries too, or they protect nothing.
+   - **The `deny` list keeps your authority yours.** Approving, accepting, adopting, rejecting, abandoning, superseding or deleting a transition, accepting a package, recording a ledger checkpoint, and disposing of a Continuum decision or principle are your acts, never an agent's. Per the [Claude Code permissions documentation](https://code.claude.com/docs/en/permissions.md), deny is evaluated before allow in every settings scope, and a Bash deny rule matches any part of a compound command and past leading variable assignments; per the [subagents documentation](https://code.claude.com/docs/en/sub-agents.md), a settings-level Bash deny rule also applies to subagents. Each Bash rule has a `PowerShell(…)` twin because Windows sessions also run commands through the PowerShell tool; the documentation gives PowerShell rules the same shape but does not say whether its deny rules match inside compound commands. It is a backstop, not a security boundary: a rule does not match the same program run another way (`npx continuum …`, `sh -c "…"`, a full path). The agents are also instructed never to perform these acts.
+   - Commands that write files (`continuum package build`, `bind`, `realize`, `icp init`, `icp materialize`) are deliberately not pre-approved, so Claude Code asks each time; on a repository with an adopted package the agents run the in-place ones only on scratch copies.
    - `curl` (saving diagram images from their signed links) is deliberately left out: a broad `curl` rule would allow any network call, so Claude Code asks each time.
    - File edits are still confirmed. The agents are instructed to write only under `continuum/`; that is an instruction, not an enforced limit. Only the researcher has a restricted tool list (read and web tools).
 

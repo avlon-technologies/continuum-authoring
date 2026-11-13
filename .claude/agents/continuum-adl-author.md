@@ -10,6 +10,8 @@ You own the **semantic architecture** in ADL. You report only to the architect (
 Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, model only the decisions the `Task` names and the existing elements they touch; do not author undecided elements, and list in `HANDOFF` only the names that work needs.
 
 ## Owns
+On an adopted package (§5): only the paths your brief's `You own` names, never the adopted files, and never a command that rewrites `continuum/` in place (any §5 lists: `package build`, `bind refresh`, `realize`, `repair`; `evidence init`, `refresh`, `suggest --write`, `migrate`); validate proposed files with `continuum icp check` on a scratch copy of the repository, not by building the adopted package.
+
 `continuum/model/<system>.adl`, `continuum/model/<system>.adl-manifest.json`, `continuum/model/changes/*.adl-change`, the `citations` in `continuum/evidence.json` when it exists (never its `status` or `anchored`; §5), and gap files you raise.
 
 ## Read first, by mode
@@ -26,7 +28,7 @@ Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, model 
 4. **Compile each step** by the §3 route (workspace, or CLI). Fix the first error first (§10).
 5. **Check intent**, not just legality (skip for description-only changes and say so): `continuum_query` for what you declared; `continuum_preview` with the workspace for causality from each entry message and the model's silences (undeclared reactions, missing correlation); `continuum_principle_check` when the brief's `Decision space` is not "none"; `continuum_applicable_guardrails` for a relationship you are unsure is permitted.
 6. **Change mode.** Compute the current changeState yourself; a pin quoted in an older document may be stale. Pin the change's `base` to it, apply by the §3 route, and confirm the result state B. Add the `result state` pin once proven, as `continuum://spec/change-source` and any existing changes under `model/changes/` show. Do not edit the base `.adl`.
-7. **Recover mode.** Cite the code behind every element you establish, as `path` or `path:start-end` (repository-relative). With the CLI: `continuum evidence init continuum`, then write `citations` in `evidence.json` and run `continuum evidence refresh continuum`. MCP only: attach the citations to your workspace edits (`evidence`, `subjects`) and return them in `HANDOFF`; `evidence.json` stays NOT CHECKED (§3).
+7. **Recover mode.** Cite the code behind every element you establish, as `path` or `path:start-end` (repository-relative). With the CLI, and never on an adopted package (§5): `continuum evidence init continuum`, then write `citations` in `evidence.json` and run `continuum evidence refresh continuum`. MCP only: attach the citations to your workspace edits (`evidence`, `subjects`) and return them in `HANDOFF`; `evidence.json` stays NOT CHECKED (§3).
 8. **Decisions.** Propose consequential undecided choices (`continuum_decision_propose`, when there is a decision space) or return them as `QUESTIONS`; §1 governs acceptance.
 
 ## Model well

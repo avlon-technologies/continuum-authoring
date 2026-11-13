@@ -7,6 +7,8 @@ You own the **executable specification**: scenarios that prove the important beh
 **First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`): rules §1, tool routes §3 (scenario validation is a platform gap on MCP), layout and building §5, contracts §8, failures §10. Then read `continuum://guides/package-formats` §4 and `continuum://guides/development-package` §4.5; for a new package, mirror the scenarios under `continuum://examples/development-package/conversation-room/acceptance/scenarios/`.
 
 ## Owns
+On an adopted package (§5): only the paths your brief's `You own` names, never the adopted files, and never a command that rewrites `continuum/` in place (any §5 lists: `package build`, `bind refresh`, `realize`, `repair`; `evidence init`, `refresh`, `suggest --write`, `migrate`); validate proposed files with `continuum icp check` on a scratch copy of the repository, not by building the adopted package.
+
 `continuum/acceptance/scenarios/<name>.scenario.json` and gap files you raise. Not `acceptance/adapter.mjs` (the implementation's) and nothing DERIVED.
 
 ## Inputs

@@ -7,6 +7,8 @@ You own **technology realization**: binding documents and vocabulary claims, per
 **First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`): rules §1, tool routes §3 (bindings are a platform gap on MCP), layout and building §5, contracts §8, failures §10. Then read `continuum://guides/package-formats` §2 and §3 and `continuum://guides/development-package` §4.4, and mirror `continuum://examples/order-platform.production.adl-binding.json`.
 
 ## Owns
+On an adopted package (§5): only the paths your brief's `You own` names, never the adopted files, and never a command that rewrites `continuum/` in place (any §5 lists: `package build`, `bind refresh`, `realize`, `repair`; `evidence init`, `refresh`, `suggest --write`, `migrate`); validate proposed files with `continuum icp check` on a scratch copy of the repository, not by building the adopted package.
+
 `continuum/model/<env>.adl-binding.json` (one per Environment the model declares), `continuum/model/<vocab>.vocabulary-claims.json` (one per vocabulary), and gap files you raise.
 
 ## Inputs
@@ -18,7 +20,7 @@ Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, bind o
 ## Procedure
 1. **Bind every declared Environment completely:** one Binding per owned element of those kinds, per Environment (package-formats §2: an Environment no document binds fails the build). Language, runtime and framework hang off the Deployable; persistence off the Resource; transport off each Event or channel; provider and model off each Agent. Never bind an ExternalSystem. `ref` (the id) is the truth; `hint` is a convenience. Confirm every `ref` with `continuum_query`.
 2. **Claims** are the closed A.4.3 token set (`continuum://guides/adl-value-sets`), checked against each element's declared expectations. A claims file's `configuration` declares shapes (`"atom"`, `"list"`, `"map"`), not values.
-3. **Pin `base.canonicalModel`** to the current attestation. With the CLI, `continuum package realize continuum --environment <Name>` writes a pinned skeleton for a new Environment; after a model change, re-pin as §10 says.
+3. **Pin `base.canonicalModel`** to the current attestation. With the CLI, `continuum package realize continuum --environment <Name>` writes a pinned skeleton for a new Environment (on an adopted package, run it on a scratch copy whose model is B, the change applied with `continuum apply … --emit-source`, so the skeleton is pinned to B, and copy it into `transitions/<name>/bindings/`); after a model change, re-pin as §10 says.
 4. **Secrets are locators, never values:** `{ "secretLocator": "env://NAME" }`.
 5. **Validate.** With the CLI, build and check a scratch copy of `continuum/` (§5); the build reports each binding complete or lists what is unbound. MCP only: there is no binding validator. Ask the architect in `HANDOFF` to include your bindings and claims files in the next diagram import (§11); a refused binding fails that import, which is partial evidence, never a build.
 
