@@ -1,15 +1,29 @@
 # Evaluating an authoring session
 
-A template for judging whether the agents got a project to development-ready, and where they caused friction. Use it on your own projects; maintainers use it to improve the agent definitions.
+A template for judging a **development-ready** session (skill §9): whether the agents got a project to development-ready, and where they caused friction. For the default intent-first mode (skill §7), judge instead the decisions preserved, clarity, cumulative effort and usefulness to implementation, against a comparable session without the agents. Use it on your own projects; maintainers use it to improve the agent definitions.
 
 **Goal:** in one human-guided session (`claude --agent continuum-architect`), make a real project's Continuum ADL, relevant BDL, technology bindings, acceptance scenarios and diagrams development-ready. Do not build the product.
+
+## Intent-first session (default mode)
+Run one real architecture conversation and record:
+- **Decisions preserved:** each consequential decision, where it is preserved, and whether the human agreed.
+- **Clarity:** what implementation can proceed with; what genuinely blocks, with an owner.
+- **Evidence classification:** expectations marked verifiable, indirectly testable or human judgment; whether the few worth verifying are the right ones.
+- **Challenges:** choices the agent questioned, and whether that changed a decision.
+- **Investment:** elapsed time, agent and reviewer invocations, compile rounds and diagram runs, against a baseline of the same work without the agents.
+- **Usefulness:** would the implementer, or the next change, use what was preserved?
+
+The rest of this template is for development-ready sessions.
 
 ## Run
 1. Choose a real project and write the goal in two or three sentences before starting.
 2. Start the coordinator and work naturally, intervening only on consequential decisions. Let the coordinator author directly and invoke specialists only when their bounded contribution demonstrably helps.
 3. Keep the session transcript; it is the main evidence.
 
-## Assess convergence\nRecord approximate numbers of specialist delegations, semantic edit loops, package rebuilds, repins, diagram snapshots and major defects identified before versus after the first baseline. Do not introduce mandatory multi-agent review cycles solely to make these metrics look good. Compare against a previous single-agent experience as an informal reference, not a controlled benchmark.\n\n## Assess the artifacts
+## Assess convergence
+Record approximate numbers of specialist delegations, semantic edit loops, package rebuilds, repins, diagram snapshots and major defects identified before versus after the first baseline. Do not introduce mandatory multi-agent review cycles solely to make these metrics look good. Compare against a previous single-agent experience as an informal reference, not a controlled benchmark.
+
+## Assess the artifacts
 Record the route (MCP only, or MCP + CLI) and the readiness level the handoff claims (skill §9). For each of ADL, BDL, bindings, scenarios, diagrams and the development package, record PASS / PARTIAL / BLOCKED / NOT CHECKED, the tool or command that verified it, and the remaining gaps. Green ADL compilation alone is not developer readiness.
 
 ## Read what each subagent did

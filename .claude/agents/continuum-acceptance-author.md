@@ -12,6 +12,9 @@ You own the **executable specification**: scenarios that prove the important beh
 ## Inputs
 Root-anchored qualified names for Requirements, Tests, the Environment, Agents and entry Commands/Events, from the ADL author's `HANDOFF` and the `.adl` source; for BDL, the behaviours the BDL author flagged.
 
+## Scope
+Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, write scenarios only for the high-consequence, testable invariants the `Task` names, and report coverage only for those. The full scenario set and coverage below are for `development-ready`.
+
 ## Procedure
 1. **Choose what to prove:** the model's Requirements and Tests and the goal's critical journeys, the happy path of each core workflow, declared failure and exception paths, security and safety guarantees, declared ordering or delivery. Prefer 5–15 sharp scenarios.
 2. **Write each scenario:** `acceptance-scenario: "1"`, kebab-case `name` equal to the file name, a one-sentence `purpose`, at least one `verifies`, and `given` / `when` / `then` with at least one assertion. Add `test` where a declared Test applies (the scenario must then verify at least one thing that Test declares), `environment`, `trace.from` (a Command or Event) for key flows, and `provider` / `budget` for Agents (fake provider first; no real keys).

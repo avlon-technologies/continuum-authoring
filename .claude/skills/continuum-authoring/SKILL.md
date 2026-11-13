@@ -1,6 +1,6 @@
 ---
 name: continuum-authoring
-description: Shared protocol for the continuum-* agents - authority, communication, MCP-first tool routes, knowledge map, package layout and ownership, discovery, brief/return contracts, readiness levels, failure playbook, diagram rules and progress reporting. The single source of truth each agent definition refers to.
+description: Shared protocol for the continuum-* agents - authority, communication, MCP-first tool routes, knowledge map, package layout and ownership, intent-first authoring (the default), brief/return contracts, the opt-in development-ready protocol and readiness levels, failure playbook, diagram rules and progress reporting. The single source of truth each agent definition refers to.
 ---
 # Continuum authoring — shared protocol
 
@@ -16,18 +16,21 @@ Every continuum-* agent reads this file first (at `.claude/skills/continuum-auth
 - **Never claim a check that did not run.** If it cannot run, the result is **NOT CHECKED** and the artifact **UNVERIFIED**. Never build a workaround for a capability the platform lacks; record the gap (§3).
 - **Authority rule.** Three different acts are called "acceptance"; keep them apart:
   1. *Decisions* (Host decision space): agents propose (`continuum_decision_propose`). Accepting, rejecting, superseding or delegating is the human's act, unless current Host policy explicitly authorizes that action and scope for an agent; even then only the architect performs it, tells the human, and cites the policy.
-  2. *Agreement in the session*: the human's answer to a question or approval of a proposal. The architect records it in `GOAL.md` or `HANDOFF.md` with the date and the exact choice. It makes something accepted intent for this authoring work. It is not a lifecycle act.
+  2. *Agreement in the session*: the human's answer to a question or approval of a proposal, or that of an orchestrator the human has explicitly given this authority (record which). The architect records it in `GOAL.md` or `HANDOFF.md` with the date and the exact choice. It makes something accepted intent for this authoring work. It is not a lifecycle act.
   3. *Lifecycle acts* (approve, accept, adopt a transition): recorded only by the human with the CLI (`continuum icp approve` / `accept` / `adopt`; `continuum://guides/development-workflow` §3.5). Agents never perform or claim them.
 
   "Accepted" in this protocol means 2 unless 1 or 3 is named. Never present a proposal as accepted.
-- **Do not implement application code.** The deliverable is the development package.
-- **One writer per file** (§5). Ownership restricts writes, not critique. The one exception: the architect applies `GAP-UPDATES` to gap files other agents raised.
+- **Architectural intent is the objective; artifacts are its representation.** By default (§7) the deliverable is consequential intent, discovered and preserved in the artifacts that carry it. A development package is the deliverable only in development-ready mode (§9), when explicitly requested.
+- **Do not implement application code.**
+- **Agents do not issue verification verdicts.** A verdict is what a tool that ran says (compiler, package build, Continuum verification, tests), reported with its trust model. Compilation establishes model legality, never implementation correctness. Current CLI verification assumes cooperative assessed code; never imply tamper resistance.
+- **One writer per file** (§5). Ownership restricts writes, not critique. In both modes the architect may author any file directly; a specialist's §5 ownership applies only while that file is delegated to it, and then the architect does not write it concurrently. The one other exception: the architect applies `GAP-UPDATES` to gap files other agents raised.
+- **PASS means cited tool evidence passed**, never an agent's own judgment of correctness.
 
 ## 2. Team, communication and delegation
 
 | Agent | Role | Writes |
 |---|---|---|
-| `continuum-architect` | Coordinator: the only agent that talks to the human; discovers, briefs, reconciles, imports diagram snapshots, shows results, owns readiness and the handoff. | spec, Goal, handoff, gap triage |
+| `continuum-architect` | Primary author and the only agent that talks to the human: runs the intent conversation, authors directly, briefs specialists only when warranted, imports diagram snapshots, shows results, owns the handoff (and readiness in development-ready mode). | spec, Goal, handoff, gap triage; any authored file it does not delegate (§1) |
 | `continuum-adl-author` | Semantic architecture (ADL), new models and `.adl-change` changes, recovery citations. | model, manifest, changes, evidence citations |
 | `continuum-bdl-author` | Business model (BDL), when business semantics matter. | `.bdl`, realization |
 | `continuum-tech-author` | Technology bindings and vocabulary claims, per Environment. | bindings, claims |
@@ -105,9 +108,11 @@ The package root is the target repository's `continuum/`, in the layout of `cont
 
 ```
 continuum/
-  development-package.json            architect          spec: kebab-case name, environment, controls, semantic.change
-  GOAL.md                             architect          intent, ending with the authority line
-  HANDOFF.md                          architect          status table, gaps, agreements, blockers, review, retrospective
+  development-package.json            architect          development-ready mode only: kebab-case name, environment, controls, semantic.change
+  GOAL.md                             architect          the intent record: intent, decisions and rationale, assumptions,
+                                                         verification classification (§7); ends with the authority line
+  HANDOFF.md                          architect          session outcome (§7); in development-ready mode, the §9 status
+                                                         table, gaps, agreements, blockers, review, retrospective
   model/
     <system>.adl                      adl-author
     <system>.adl-manifest.json        adl-author         exactly one
@@ -126,11 +131,13 @@ continuum/
   model/compile-proof.json, acceptance/README.md, acceptance/traces/ ...   DERIVED by package build
 ```
 
-`acceptance/adapter.mjs` belongs to the implementation. Decisions live in the Continuum Host, not in files: agents propose them with tools (§1) and never write a `decisions/` directory.
+`acceptance/adapter.mjs` belongs to the implementation. Decisions live in the Continuum Host when there is a decision space: agents propose them with tools (§1). Without one, they live in the *Decisions* section of `GOAL.md` (§7). Agents never write a `decisions/` directory; if the repository already keeps ADRs, say so and let the human choose whether to mirror a decision there.
 
 **Lifecycle.** Read `ledger.json` (or `continuum status`) before changing anything. If the ledger records an adopted change, its result is the current state. Editing authored files after adoption makes the package drift from the adopted checkpoint; that is expected while authoring. Moving authority is a lifecycle act (§1, act 3).
 
-**Safe mechanical refresh.** The one-writer rule guards semantic ownership, not deterministic maintenance. The coordinator may run documented, semantics-preserving refreshes of pins and generated outputs when inputs are stable, recording the command and verified before/after diff. Any change to authored meaning returns to integrated review.\n\n**Building.** `continuum package build` rewrites DERIVED files in place; when `development-package.json` names `semantic.change` (change mode) it requires `--out <dir>` (package-formats §1). Only the architect builds in place, after a round of specialists has returned. A specialist needing a build verdict copies `continuum/` to a scratch directory outside the repository and builds the copy, with `--out` in change mode. Specialists may run in parallel: a check that fails because of another owner's file is reported as theirs, not fixed.
+**Safe mechanical refresh.** The one-writer rule guards semantic ownership, not deterministic maintenance. The coordinator may run documented, semantics-preserving refreshes of pins and generated outputs when inputs are stable, recording the command and verified before/after diff. Any change to authored meaning returns to integrated review.
+
+**Building.** `continuum package build` rewrites DERIVED files in place; when `development-package.json` names `semantic.change` (change mode) it requires `--out <dir>` (package-formats §1). Only the architect builds in place, after a round of specialists has returned. A specialist needing a build verdict copies `continuum/` to a scratch directory outside the repository and builds the copy, with `--out` in change mode. Specialists may run in parallel: a check that fails because of another owner's file is reported as theirs, not fixed.
 
 ## 6. Modes
 
@@ -141,11 +148,41 @@ continuum/
 | **change** | existing model + requested change | `model/changes/<name>.adl-change` pinned to the current changeState | prove apply → B (§3); downstream artifacts target B; `semantic.change` set once the human agrees (§1, act 2) |
 | **recover** | code, no model | evidence-backed recovery | every element cited (§3 recovery citations); unknown is a gap |
 
-## 7. Experience-first discovery and research
+## 7. Intent-first authoring (the default)
 
-Before formalizing ADL, the architect discovers the desired user and developer experience: 2–3 representative journeys (plus one critical exception where relevant), what must be observable, stated constraints, inferred assumptions, and the 1–3 unknowns that could change significant architecture. Compare the simplest viable approach with material alternatives using **keep/cut reasoning**, and say what does not need modeling. Batch only consequential questions for the human. Every agent challenges assumptions rather than transcribing them. This lives concisely in `GOAL.md`; it is not an extra phase or schema.
+Every session is intent-first unless the human explicitly asks for development-ready output. Completeness means the consequential intent is preserved, not that every artifact exists.
 
-Brief `continuum-researcher` only when dated external evidence could materially change an architectural choice (research brief, §8). Its findings are evidence, not accepted intent.
+**Choosing the mode.** *Development-ready mode* (§9) applies only on an explicit request from the human or orchestrator: a development package, development-ready or implementation-ready output, a handoff package for a coding agent. It is then never silently downgraded: every §9 row applies, and what cannot be met makes the result Partial with the missing rows named. Everything else is intent-first, and is never silently upgraded into package production. If the request is unclear, work intent-first and say in one line that development-ready mode is available.
+
+**The conversation.** Discover → Decide → Preserve → Connect to evidence → Evolve. A loop the architect drives in conversation, not phases to complete.
+
+1. **Understand** the product or the proposed change: the intended outcome, its boundaries, and what would be costly to reverse. Read the repository, any existing `continuum/` model, its lifecycle state (§5) and the decision space first; do not ask what they already answer. Where it helps, sketch 2–3 representative journeys and one critical exception. Note the session's start time for the effort record. **Code but no model** (§6 would say recover): do not recover the whole system; model only the existing elements the decisions touch, cite each (`path:start-end`), and record the unmodelled remainder as out of scope.
+2. **Discover the consequential decisions and constraints.** A decision is consequential when it is costly to reverse, crosses a boundary (ownership, trust, data, consistency, an external dependency), or could be silently erased by a later change. Name the few that matter now, and say what does not need deciding or modelling yet (keep/cut reasoning).
+3. **Ask only questions that change the intent**, batched, each with why it matters and a recommended default. Decide minor ones yourself and record them. **Challenge, do not transcribe:** when a stated choice looks questionable (needless distribution, shared write ownership, an irreversible choice made early, a constraint another one contradicts), say so with the reason and a simpler alternative before preserving it. The human decides; record the agreement (§1 act 2), or the disagreement and its risk.
+4. **Preserve the intent in the artifact that carries it**, and only there:
+
+   | Intent | Preserved in |
+   |---|---|
+   | structure, ownership, boundaries, messages, workflows, dependencies, Environments | ADL (new model, or an `.adl-change` on an existing one), compiled (§3) |
+   | business rules, lifecycles, obligations, actors | BDL, only when business semantics are the hard part |
+   | a consequential technology choice | a decision (row below) until the model declares the Environment it belongs to; then a binding entry for the affected element, recorded as proposed in `GOAL.md` until agreed |
+   | a decision, its alternatives and rationale (ADR-style) | the Host decision space (`continuum_decision_propose`) when there is one; otherwise the *Decisions* section of `GOAL.md` (§5). Proposed until the human agrees (§1) |
+   | a cross-cutting rule (e.g. tenant isolation) | a principle: check existing ones (`continuum_principle_list`, `continuum_principle_check`); propose a new one as a decision (row above), never accept it; where ADL can declare it as a requirement or constraint, do so |
+   | a picture that settles a question or communicates the design | an exploratory diagram (§11), labelled as its `delivery.kind` says |
+   | the intent itself, assumptions with provenance, open questions | `GOAL.md` |
+
+   A thin compiling model that holds the agreed decisions is enough. Do not author elements nobody decided, or bind Environments nobody chose.
+5. **Connect to evidence.** Classify each consequential expectation in `GOAL.md` as **verifiable** (a declared Continuum check, acceptance scenario or test could evaluate it: name which), **indirectly testable** (only by proxy: inspection, load test, review), or **human judgment** (fitness, trade-off and risk acceptance). Recommend verification only for the few high-consequence, testable invariants (for example mutation authority or tenant isolation), never a verifier per rule. Report evidence that exists with the tool that produced it; everything else is unverified (§1).
+6. **Stop at sufficient clarity**: every consequential decision is agreed with its rationale preserved, or explicitly open with an owner and what it blocks; touched ADL and BDL compile; the evidence classification is written; and implementation can proceed on what is decided. Then write the session outcome and stop. Offer development-ready mode; do not start it.
+7. **Evolve.** On a later change, find the intent it affects, update only those artifacts (an existing model changes through an `.adl-change`, §6), and surface conflicts with earlier intent instead of silently rewriting it. If an earlier development-ready package exists, say in the session outcome that its readiness claim no longer holds for the changed state, and keep its handoff as `HANDOFF-<date>.md` rather than overwriting it.
+
+**Switching modes.** A development-ready request mid-conversation starts §9 from the current state: reuse agreed intent, run the §9 discovery for whatever it lacks, and start §12 then. A human may also end a development-ready session early; that is an explicit agreement (§1 act 2), and the result is Partial with the missing rows named, never a quiet relabel.
+
+**Not part of the default.** No mandatory specialists, no binding of every Environment, no acceptance suite, no final verified diagram set, no package build, no review cycle. Each is used when the request, the risk or the evidence warrants it: a specialist for a bounded uncertainty or separable task (§8); `continuum-researcher` only when dated external evidence could change a consequential choice (research brief, §8; its findings are evidence, not accepted intent); one fresh read-only reviewer (review brief, §8) when a costly-to-reverse decision rests on agent reasoning alone, or the human asks. With no reviewer, say SELF-REVIEW.
+
+**Bound the investment.** Track cumulative effort, not single agent durations: elapsed time, specialist and reviewer invocations, diagram runs, compile rounds. When effort grows without adding preserved intent, stop and say so.
+
+**Session outcome** (`HANDOFF.md`, short): what intent was learned or changed; which decisions and constraints matter and why; where each is preserved; what is verifiable, what evidence exists, and what remains unverified or human judgment; what implementation can safely proceed with and which decision genuinely blocks; the effort spent and what it bought.
 
 ## 8. Brief and return contracts
 
@@ -153,6 +190,7 @@ Brief `continuum-researcher` only when dated external evidence could materially 
 
 ```
 Mode:           new | existing | change | recover
+Authoring:      intent-first | development-ready (§7)
 Goal:           one or two sentences of the human's goal
 Repository:     absolute path; package root
 State:          changeState / attestation (or "none yet"); whether an adopted checkpoint exists; diagram snapshotId (or "none")
@@ -167,11 +205,13 @@ Out of scope:   what not to do
 Budget:         e.g. "at most 2 exploratory diagrams", "no package build"
 ```
 
+**Scope follows `Authoring`.** Under `intent-first`, do the `Task` and nothing more: the completeness obligations in the agent files (every Environment bound, a full scenario set with coverage, a final verified diagram set) apply only under `development-ready` or when the `Task` asks for them. Under either, report what you did not cover rather than implying it.
+
 A **research brief** replaces `Task` with: `Decision:` the bounded question; `Alternatives:` including the simplest or do-nothing; `Constraints:`; `Sources:` acceptable kinds; `Stop when:` the stopping condition or time budget.
 
-A **review brief** (§9 step 6) goes to a fresh `general-purpose` agent, which has not read this file, so the architect pastes the Return block below into it verbatim. `Read-only:` `GOAL.md` and the `continuum/` package; `Task:` explain the key journeys and behaviour as a developer would, then name the top three decisions you would still have to invent and anything contradictory; `Out of scope:` editing any file, reading the session's other output. It returns the explanation, then the block, with `CHANGED: none`, the invented decisions under `GAPS` and the contradictions under `CHALLENGE`.
+A **review brief** (§7, or §9 steps 3 and 6) goes to a fresh `general-purpose` agent, which has not read this file, so the architect pastes the Return block below into it verbatim. `Read-only:` `GOAL.md` and the `continuum/` package (in intent-first, `GOAL.md` and the artifacts the session touched); `Task:` explain the key journeys and behaviour as a developer would, then name the top three decisions you would still have to invent and anything contradictory; `Out of scope:` editing any file, reading the session's other output. It returns the explanation, then the block, with `CHANGED: none`, the invented decisions under `GAPS` and the contradictions under `CHALLENGE`.
 
-If a needed field is missing, make the most conservative assumption, record it under `ASSUMPTIONS`, and continue.
+A brief without `Authoring` means `development-ready` (the specialists' original behaviour). If another needed field is missing, make the most conservative assumption, record it under `ASSUMPTIONS`, and continue.
 
 **Return** (specialist → architect). Role-specific material (coverage tables, inventories, comparisons) goes immediately **before** this block; the reply **ends** with it:
 
@@ -191,9 +231,13 @@ HANDOFF:     what the next specialist or the architect needs (ids, names, files,
 
 **Gap files.** Write `gaps/<yyyy-mm-dd>-<slug>.md` only when the gap blocks implementation, needs a human decision, or will outlive the session; otherwise list it under `GAPS`. Shape: a title stating the fact the model does not settle; a line with date, raised by, status (one of the `GAPS` states above, or `resolved <date> (<disposition>)`) and what it blocks; then sections *Evidence* (paths with line ranges, tool verdicts), *Options* (consequence of each; the smallest change that closes it and the state it pins) and *Recommendation*.
 
-## 9. Protocol and readiness
+## 9. Development-ready mode: protocol and readiness
 
-**Integrated-first default:** the primary architect is empowered to author the *entire* model/package directly. The specialists are optional advisers or bounded contributors, not a required ADL → BDL → bindings → scenarios production chain. The single writer for a particular file is whoever the coordinator assigns for that *specific edit*, and the coordinator may own every authored file when specialists are not delegated. Independent challenge tests the integrated design rather than rewarding local artifact legality.\n\n1. **Discover and challenge** (§7), and survey the repository, accepted decisions, principles and lifecycle state (§5).
+This section applies **only** when development-ready output was explicitly requested (§7). It then applies in full, and is not reduced to fit time or tooling: a row that cannot be met makes the result Partial. Intent-first sessions claim no readiness level; their outcome is §7's.
+
+**Integrated-first:** the primary architect is empowered to author the *entire* model/package directly. The specialists are optional advisers or bounded contributors, not a required ADL → BDL → bindings → scenarios production chain. The single writer for a particular file is whoever the coordinator assigns for that *specific edit*, and the coordinator may own every authored file when specialists are not delegated. Independent challenge tests the integrated design rather than rewarding local artifact legality.
+
+1. **Discover and challenge** (§7 steps 1–3, plus: 2–3 journeys and one critical exception, what must be observable, every Environment the system needs, and the 1–3 unknowns that could change significant architecture), and survey the repository, accepted decisions, principles and lifecycle state (§5).
 2. **Read knowledge** for the constructs you will touch (§4). Draft the Goal, representative BDL behaviors, thin compiling ADL and early acceptance counterexamples **as one coherent design**. Do not manufacture a large downstream package yet.
 3. **Early independent challenge, once meaningful.** Give a fresh read-only `general-purpose` reviewer the actual current Goal, semantic model, business behavior, and representative tests, with *no agent deliberations or previous review findings*. Require at most the three biggest evidenced cross-artifact contradictions, missing implementation-significant contracts and vacuous assertions. Challenge exceptions, boundary times, key/credential lifecycle, idempotency/replay/concurrency and behavior precedence **where relevant**. Record exact locations and resolve the major findings before costly pins and final diagrams. If a reviewer cannot run, mark SELF-REVIEW.
 4. **Converge in one head.** The primary architect reconciles Goal ↔ ADL ↔ BDL ↔ bindings ↔ scenarios together. Specialists can advise on bounded uncertainties, but do not use agent-to-agent ownership handoffs as a repair mechanism. Every normative behavior needed by scenarios must exist in the semantic ADL/BDL; Goal-only rules are not enough. Prefer counterexamples that would fail under a plausible incorrect implementation. Record gaps where the model cannot express a requirement.
@@ -241,7 +285,7 @@ Anything less is **Partial**, with each missing piece named. A diagram set block
 | A workspace is lost | Re-create it from the files on disk and recompile. |
 | A call fails with errors unrelated to your change | Suspect the payload (§3) and re-check before reporting a model defect. |
 | The attestation moved (bindings stale) | CLI: `continuum package bind refresh continuum`. MCP only: copy the new compile's `attestation` into each binding's `base.canonicalModel` with a script, never by hand, and keep the bindings UNVERIFIED. |
-| A declared Environment has no binding | Bind it, or record a gap that blocks Development-ready: the build fails on any declared Environment no document binds (package-formats §2). Never mark it deferred. |
+| A declared Environment has no binding | Intent-first: record it as open in the session outcome. Development-ready: bind it, or record a gap that blocks Development-ready: the build fails on any declared Environment no document binds (package-formats §2). Never mark it deferred. |
 | A scenario reference does not resolve | Fix your scenario, or report the missing element to the ADL author via `CHALLENGE`/`HANDOFF`. |
 | Diagram import refused `too-many` | Live-snapshot quota per account; there is no delete and snapshots expire after 24 hours. Return BLOCKED, and record the planned view (question, audience, import parameters) so it can run later. |
 | Diagram import too large for one call | Use `diagram_model_upload_begin` / `_chunk` / `_finish` (limits are in every import result). |
@@ -269,7 +313,9 @@ The Continuum Diagram server's tool descriptions are the procedure: how to impor
 
 ## 12. Progress reporting
 
-A run can last an hour or more, often in the background. The human must be able to see, at any moment and without interrupting it, what is happening, what is done, what is proven, and what is blocked. Two files carry that, outside the package so neither the guard nor the package build ever sees them:
+**When it applies.** In development-ready mode, or when the coordinator runs in the background. An intent-first conversation, even with a bounded delegation, needs none of it: the conversation and `HANDOFF.md` are the record. Specialists append events whenever their brief carries a `Run:` line.
+
+A long run can last an hour or more, often in the background. The human must be able to see, at any moment and without interrupting it, what is happening, what is done, what is proven, and what is blocked. Two files carry that, outside the package so neither the guard nor the package build ever sees them:
 
 ```
 .claude/progress/

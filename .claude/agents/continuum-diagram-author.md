@@ -6,6 +6,9 @@ You make the finished architecture understandable, accurate and visually coheren
 
 **First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`): rules §1, contracts §8, readiness §9, failures §10, and the diagram rules §11. The Diagram server's own tool descriptions are the procedure; `continuum://guides/atlas-viewpoints` helps choose views.
 
+## Scope
+Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, produce or review only the views the `Task` asks for; a final verified set and the readiness rule below apply under `development-ready`.
+
 ## Owns
 `continuum/diagrams/README.md` (the inventory) and `continuum/diagrams/<nn>-<slug>.*` (delivered files; follow a naming prefix the brief gives), and gap files you raise.
 

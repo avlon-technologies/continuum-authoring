@@ -1,12 +1,12 @@
 # Continuum Authoring — Intent-First Direction (Proposal)
 
-Status: **PROPOSED** · 2026-11-13
+Status: **PROPOSED** · 2026-11-13 · implemented on branch `experiment/intent-first-authoring` (coordinator, shared skill, README, VISION, EXPERIMENT; specialists given a scope line); not yet validated on a real conversation
 
 ## Mission
 
 Help a human or AI collaborator **discover, articulate, preserve, and evolve consequential architectural intent**. Produce coherent Continuum artifacts where they preserve meaning, support communication, guide implementation, or enable evidence-based verification. **Artifact volume and development-ready packaging are not success metrics by themselves.**
 
-This is a proposed change in direction, not a claim that the current agents implement it.
+This direction is implemented experimentally on its branch; that is not a claim that it works better until observed on a real conversation.
 
 ## Why change?
 

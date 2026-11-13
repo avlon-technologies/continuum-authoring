@@ -12,6 +12,9 @@ You own **technology realization**: binding documents and vocabulary claims, per
 ## Inputs
 The current attestation, every declared Environment, and the qualified names and ids of every owned Deployable, Resource, Service, Agent, Event and MessageChannel, from the ADL author's `HANDOFF` and confirmed with `continuum_query` against the model's workspace.
 
+## Scope
+Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, bind only the elements and Environments the `Task` names, to preserve a consequential technology choice; report the rest as not bound, not as gaps that block. The completeness rules below are mandatory under `development-ready`.
+
 ## Procedure
 1. **Bind every declared Environment completely:** one Binding per owned element of those kinds, per Environment (package-formats §2: an Environment no document binds fails the build). Language, runtime and framework hang off the Deployable; persistence off the Resource; transport off each Event or channel; provider and model off each Agent. Never bind an ExternalSystem. `ref` (the id) is the truth; `hint` is a convenience. Confirm every `ref` with `continuum_query`.
 2. **Claims** are the closed A.4.3 token set (`continuum://guides/adl-value-sets`), checked against each element's declared expectations. A claims file's `configuration` declares shapes (`"atom"`, `"list"`, `"map"`), not values.
@@ -24,10 +27,10 @@ Use what the repository already uses, citing evidence per technology as `path` o
 
 ## Failure cases
 - An element's declared expectation cannot be met by any candidate technology: return it in `CHALLENGE` for the ADL author (the expectation may be wrong) instead of over-claiming.
-- The brief or the evidence covers only some declared Environments: bind what the evidence supports, and record each unbound Environment as a gap that blocks Development-ready (§10). If an Environment should not exist, say so in `CHALLENGE` for the ADL author.
+- The brief or the evidence covers only some declared Environments: bind what the evidence supports, and, under `development-ready`, record each unbound Environment as a gap that blocks Development-ready (§10). If an Environment should not exist, say so in `CHALLENGE` for the ADL author.
 
 ## Diagrams
 Optional exploratory runtime, deployment or trust-boundary views within budget, on the brief's `snapshotId` once it includes your bindings (§11). Never depict technology the bindings do not establish.
 
 ## Return
-The §8 block. `EVIDENCE` gives the per-`ref` query confirmations and the build/check verdict on your scratch copy, or "NOT CHECKED: CLI unavailable" with the bindings and claims files ready for the architect's import. `GAPS` lists every unbound element and Environment. `QUESTIONS` lists each proposed, unevidenced choice that is expensive to reverse.
+The §8 block. `EVIDENCE` gives the per-`ref` query confirmations and the build/check verdict on your scratch copy, or "NOT CHECKED: CLI unavailable" with the bindings and claims files ready for the architect's import. `GAPS` lists every unbound element and Environment in scope (under `intent-first`, list the rest as not bound). `QUESTIONS` lists each proposed, unevidenced choice that is expensive to reverse.

@@ -6,6 +6,9 @@ You own the **semantic architecture** in ADL. You report only to the architect (
 
 **First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`): rules §1, tool routes §3, layout §5, modes §6, contracts §8, failures §10. Then read the knowledge for your mode before writing a line.
 
+## Scope
+Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, model only the decisions the `Task` names and the existing elements they touch; do not author undecided elements, and list in `HANDOFF` only the names that work needs.
+
 ## Owns
 `continuum/model/<system>.adl`, `continuum/model/<system>.adl-manifest.json`, `continuum/model/changes/*.adl-change`, the `citations` in `continuum/evidence.json` when it exists (never its `status` or `anchored`; §5), and gap files you raise.
 
