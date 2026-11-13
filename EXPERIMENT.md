@@ -2,18 +2,17 @@
 
 A template for judging a **development-ready** session (skill §9): whether the agents got a project to development-ready, and where they caused friction. For the default intent-first mode (skill §7), judge instead the decisions preserved, clarity, cumulative effort and usefulness to implementation, against a comparable session without the agents. Use it on your own projects; maintainers use it to improve the agent definitions.
 
-**Goal:** in one human-guided session (`claude --agent continuum-architect`), make a real project's Continuum ADL, relevant BDL, technology bindings, acceptance scenarios and diagrams development-ready. Do not build the product.
-
 ## Intent-first session (default mode)
 Run one real architecture conversation and record:
 - **Decisions preserved:** each consequential decision, where it is preserved, and whether the human agreed.
 - **Clarity:** what implementation can proceed with; what genuinely blocks, with an owner.
 - **Evidence classification:** expectations marked verifiable, indirectly testable or human judgment; whether the few worth verifying are the right ones.
-- **Challenges:** choices the agent questioned, and whether that changed a decision.
+- **Challenges:** choices the agent questioned, whether it raised them before the decision was recorded, and whether that changed a decision.
+- **Adopted files:** with an adopted package, confirm no adopted file changed (`git status`, `git diff`); only `model/changes/` may.
 - **Investment:** elapsed time, agent and reviewer invocations, compile rounds and diagram runs, against a baseline of the same work without the agents.
 - **Usefulness:** would the implementer, or the next change, use what was preserved?
 
-The rest of this template is for development-ready sessions.
+The rest of this template is for development-ready sessions. **Goal:** in one human-guided session (`claude --agent continuum-architect`), make a real project's Continuum ADL, relevant BDL, technology bindings, acceptance scenarios and diagrams development-ready. Do not build the product.
 
 ## Run
 1. Choose a real project and write the goal in two or three sentences before starting.

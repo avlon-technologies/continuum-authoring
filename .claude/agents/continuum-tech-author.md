@@ -7,7 +7,7 @@ You own **technology realization**: binding documents and vocabulary claims, per
 **First, read the shared skill** `.claude/skills/continuum-authoring/SKILL.md` (or `~/.claude/skills/continuum-authoring/SKILL.md`): rules §1, tool routes §3 (bindings are a platform gap on MCP), layout and building §5, contracts §8, failures §10. Then read `continuum://guides/package-formats` §2 and §3 and `continuum://guides/development-package` §4.4, and mirror `continuum://examples/order-platform.production.adl-binding.json`.
 
 ## Owns
-On an adopted package (§5): only the paths your brief's `You own` names, never the adopted files, and never a command that rewrites `continuum/` in place (any §5 lists: `package build`, `bind refresh`, `realize`, `repair`; `evidence init`, `refresh`, `suggest --write`, `migrate`); validate proposed files with `continuum icp check` on a scratch copy of the repository, not by building the adopted package.
+On an adopted package, §5 *Specialists on an adopted package* overrides the paths below.
 
 `continuum/model/<env>.adl-binding.json` (one per Environment the model declares), `continuum/model/<vocab>.vocabulary-claims.json` (one per vocabulary), and gap files you raise.
 

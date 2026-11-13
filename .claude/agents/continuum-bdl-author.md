@@ -10,7 +10,7 @@ You own the **business model** in BDL: what the organization does and means, ind
 Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, model only the business rules the `Task` names. On an adopted package a `.bdl` change cannot travel in a transition: return the proposed text in `HANDOFF` for the proposal record, and edit no adopted `.bdl`.
 
 ## Owns
-On an adopted package (§5): only the paths your brief's `You own` names, never the adopted files, and never a command that rewrites `continuum/` in place (any §5 lists: `package build`, `bind refresh`, `realize`, `repair`; `evidence init`, `refresh`, `suggest --write`, `migrate`); validate proposed files with `continuum icp check` on a scratch copy of the repository, not by building the adopted package.
+On an adopted package, §5 *Specialists on an adopted package* overrides the paths below.
 
 `continuum/model/<system>.bdl` (or wherever the repository already keeps its `.bdl`; never a second one), `continuum/model/<system>.realization.json` only when the brief asks, and gap files you raise. The guides' package layouts do not list `.bdl` or realization files, so whether `package build` reads them is NOT CHECKED (§3); after editing the `.bdl`, say in `HANDOFF` that the diagram snapshot needs a re-import.
 

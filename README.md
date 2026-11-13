@@ -15,7 +15,7 @@ This repository is the authoring framework. It does not implement your product.
 | Artifacts | only those that carry the intent you discussed; a thin compiling model is enough | the full set: Goal, ADL, BDL where relevant, bindings for every Environment, acceptance scenarios, final verified diagrams, the package |
 | Specialists and review | none by default; used only when a bounded question or risk warrants it | optional advisers; one early and one final independent review |
 | Ends when | sufficient architectural clarity: decisions agreed or explicitly open with an owner | every row of the readiness table holds, or the result is Partial with the gaps named |
-| Ends with | a short `continuum/HANDOFF.md`: what intent was learned, where it is preserved, what is verifiable versus a human judgment, what can proceed, what blocks, effort spent | `continuum/HANDOFF.md` with the readiness level, evidence per artifact, gaps, review findings and retrospective |
+| Ends with | a short `continuum/HANDOFF.md` (or, beside an adopted package, the change's proposal record): what intent was learned, where it is preserved, what is verifiable versus a human judgment, what can proceed, what blocks, effort spent | `continuum/HANDOFF.md` with the readiness level, evidence per artifact, gaps, review findings and retrospective |
 
 Neither mode makes verification claims of its own. Compilation shows the model is legal, not that an implementation is correct; the agent reports what the tools that ran established, and flags which expectations deserve verification and which need human judgment. A development-ready request is never silently reduced, and an intent-first conversation is never silently turned into package production. Both modes are defined in the [shared skill](.claude/skills/continuum-authoring/SKILL.md): §7 (intent-first) and §9 (development-ready).
 
@@ -53,7 +53,7 @@ Despite the `dev` in their names, these hostnames are the production preview ser
 
 The coordinator imports one diagram snapshot per model revision and the agents reuse diagram runs to stay within the limits.
 
-**Claude usage.** Claude Code usage is billed by Anthropic as usual. An intent-first conversation is usually one agent; a development-ready session is large: the coordinator may brief several specialists and reviewers, and each reads the shared skill and the Continuum guides it needs. For scale, each independent review run while maintaining this repository used 100–125 thousand tokens on its own. No full-session figure has been measured yet.
+**Claude usage.** Claude Code usage is billed by Anthropic as usual. An intent-first conversation is usually one agent; a development-ready session is large: the coordinator may brief several specialists and reviewers, and each reads the shared skill and the Continuum guides it needs. For scale: one measured intent-first conversation (two turns, one proven change, no specialists) took about 7 minutes of agent time and 45 thousand output tokens; each independent review run while maintaining this repository used 100–125 thousand tokens on its own. No development-ready session has been measured end to end.
 
 **Your data.** The Continuum servers are hosted by Avlon. Every Architect tool states that it is answered on hosted infrastructure from content supplied with the request or held in a hosted workspace, never read from your machine. What the agents send is therefore processed there: model and business documents, bindings, scenarios when checked, file paths and line ranges from your code, and any code an agent quotes. No privacy or data-retention policy for the preview is published with the servers or this repository; ask in your access issue before using a repository whose architecture you may not share with a third party.
 
@@ -101,6 +101,7 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
      "permissions": {
        "allow": [
          "mcp__continuum__*", "mcp__continuum-diagram__*",
+         "mcp__claude_ai_Continuum_Architect__*", "mcp__claude_ai_Continuum_Diagram__*",
          "Bash(continuum --version)", "Bash(continuum status *)", "Bash(continuum compile *)",
          "Bash(continuum apply *)", "Bash(continuum preview *)", "Bash(continuum diff *)",
          "Bash(continuum package check *)", "Bash(continuum icp check *)",
@@ -124,13 +125,17 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
          "PowerShell(continuum principle reject *)", "PowerShell(continuum principle revoke *)", "PowerShell(continuum principle supersede *)",
          "PowerShell(continuum principle retire *)", "PowerShell(continuum principle delegate *)", "PowerShell(continuum principle govern *)",
          "mcp__continuum__continuum_decision_accept", "mcp__continuum__continuum_decision_reject",
-         "mcp__continuum__continuum_decision_supersede", "mcp__continuum__continuum_decision_revoke"
+         "mcp__continuum__continuum_decision_supersede", "mcp__continuum__continuum_decision_revoke",
+         "mcp__claude_ai_Continuum_Architect__continuum_decision_accept",
+         "mcp__claude_ai_Continuum_Architect__continuum_decision_reject",
+         "mcp__claude_ai_Continuum_Architect__continuum_decision_supersede",
+         "mcp__claude_ai_Continuum_Architect__continuum_decision_revoke"
        ]
      }
    }
    ```
 
-   - The names must match the server names you chose in step 1. If you connected the servers as claude.ai connectors instead, the prefixes are `mcp__claude_ai_Continuum_Architect` and `mcp__claude_ai_Continuum_Diagram`; rename the deny entries too, or they protect nothing.
+   - MCP rules match the tool names Claude Code shows, `mcp__<server>__<tool>`. The example covers both ways of connecting: servers added with step 1 (`mcp__continuum__…`, `mcp__continuum-diagram__…`) and the claude.ai connectors (`mcp__claude_ai_Continuum_Architect__…`, `mcp__claude_ai_Continuum_Diagram__…`); rules for a server you did not connect are inert. If you named the servers differently, rename every MCP entry, deny entries included, or they protect nothing. Connect the Continuum server one way only: with both connected, a session sees two copies of every tool and may call the one your settings do not allow (observed in a 2026-11-13 trial, where calls to the unallowed copy were denied). Verified on 2026-11-13 in a headless session: a `mcp__claude_ai_Continuum_Architect__*` allow rule admitted the connector's tools without prompting.
    - **The `deny` list keeps your authority yours.** Approving, accepting, adopting, rejecting, abandoning, superseding or deleting a transition, accepting a package, recording a ledger checkpoint, and disposing of a Continuum decision or principle are your acts, never an agent's. Per the [Claude Code permissions documentation](https://code.claude.com/docs/en/permissions.md), deny is evaluated before allow in every settings scope, and a Bash deny rule matches any part of a compound command and past leading variable assignments; per the [subagents documentation](https://code.claude.com/docs/en/sub-agents.md), a settings-level Bash deny rule also applies to subagents. Each Bash rule has a `PowerShell(…)` twin because Windows sessions also run commands through the PowerShell tool; the documentation gives PowerShell rules the same shape but does not say whether its deny rules match inside compound commands. It is a backstop, not a security boundary: a rule does not match the same program run another way (`npx continuum …`, `sh -c "…"`, a full path). The agents are also instructed never to perform these acts.
    - Commands that write files (`continuum package build`, `bind`, `realize`, `icp init`, `icp materialize`) are deliberately not pre-approved, so Claude Code asks each time; on a repository with an adopted package the agents run the in-place ones only on scratch copies.
    - `curl` (saving diagram images from their signed links) is deliberately left out: a broad `curl` rule would allow any network call, so Claude Code asks each time.

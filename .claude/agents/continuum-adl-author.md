@@ -10,7 +10,7 @@ You own the **semantic architecture** in ADL. You report only to the architect (
 Your brief's `Authoring` line sets the scope (§8). Under `intent-first`, model only the decisions the `Task` names and the existing elements they touch; do not author undecided elements, and list in `HANDOFF` only the names that work needs.
 
 ## Owns
-On an adopted package (§5): only the paths your brief's `You own` names, never the adopted files, and never a command that rewrites `continuum/` in place (any §5 lists: `package build`, `bind refresh`, `realize`, `repair`; `evidence init`, `refresh`, `suggest --write`, `migrate`); validate proposed files with `continuum icp check` on a scratch copy of the repository, not by building the adopted package.
+On an adopted package, §5 *Specialists on an adopted package* overrides the paths below.
 
 `continuum/model/<system>.adl`, `continuum/model/<system>.adl-manifest.json`, `continuum/model/changes/*.adl-change`, the `citations` in `continuum/evidence.json` when it exists (never its `status` or `anchored`; §5), and gap files you raise.
 

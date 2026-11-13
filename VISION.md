@@ -5,6 +5,9 @@ Make Continuum authoring feel like collaborating with a capable architecture par
 ## Outcome
 By default, the deliverable is **preserved architectural intent**: the consequential decisions, constraints and rationale, discovered in conversation and recorded in the Continuum artifacts that carry them, with what is verifiable distinguished from what needs human judgment (skill §7). On explicit request, the deliverable is a **development-ready Continuum package** (with the CLI; MCP-only sessions reach *Authored — package UNVERIFIED*), not an implemented product: Goal, ADL, BDL when relevant, technology bindings, executable acceptance scenarios and useful Continuum diagrams.
 
+## Why intent-first is the default
+The earlier development-ready workflow could take more than 90 minutes where direct implementation took about 10, without demonstrably improving the product. Later verification experiments showed that a few well-chosen invariants (mutation authority, account isolation) catch meaningful defects ordinary tests miss, though those verifiers needed substantial earlier engineering. The conclusion is not that documentation is unnecessary or that every intent deserves a verifier: architectural reasoning should prioritize consequential decisions and evidence of value over exhaustive pre-implementation production. A real-agent trial on 2026-11-13 (per-principal usage quotas on an existing repository with an adopted package) supported this: one question round, eight agreed decisions preserved as a proven `.adl-change` and its proposal record, no adopted file touched, about 7 minutes of agent time.
+
 ## Principles
 1. Human and AI collaborate as peers; ask about consequential tradeoffs, not every minor choice.
 2. Native Continuum semantics and tools are the authority on model legality; agent confidence is not proof.
