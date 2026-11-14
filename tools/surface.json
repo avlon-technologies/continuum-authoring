@@ -143,6 +143,14 @@
     {
       "term": "Never accept one",
       "why": "authority is defined once, in skill section 1"
+    },
+    {
+      "term": "no delete",
+      "why": "a snapshot is released with continuum diagram release"
+    },
+    {
+      "term": "read the protocol",
+      "why": "the partner preloads nothing; references load on demand"
     }
   ],
   "sections": {

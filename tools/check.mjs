@@ -13,15 +13,33 @@ const failures = [];
 const warnings = [];
 const fail = (file, msg) => failures.push(`${file}: ${msg}`);
 
-const SKILL = '.claude/skills/continuum-authoring/SKILL.md';
+const SKILL_DIR = '.claude/skills/continuum-authoring';
+const SKILL = `${SKILL_DIR}/SKILL.md`;
+const REF_DIR = `${SKILL_DIR}/references`;
 const AGENT_DIR = '.claude/agents';
 const surface = JSON.parse(read('tools/surface.json'));
 const skill = read(SKILL);
 const agentFiles = readdirSync(join(root, AGENT_DIR)).filter((f) => f.endsWith('.md')).map((f) => `${AGENT_DIR}/${f}`);
-const docs = [SKILL, ...agentFiles, 'README.md', 'EXPERIMENT.md', 'VISION.md', 'tools/LIVE-CHECKS.md'];
+const refFiles = existsSync(join(root, REF_DIR)) ? readdirSync(join(root, REF_DIR)).filter((f) => f.endsWith('.md')).sort() : [];
+const refPath = (name) => `${REF_DIR}/${name}`;
+const docs = [SKILL, ...refFiles.map(refPath), ...agentFiles, 'README.md', 'EXPERIMENT.md', 'VISION.md', 'tools/LIVE-CHECKS.md'];
 const text = Object.fromEntries(docs.map((p) => [p, read(p)]));
+const descriptionOf = (s) => s.match(/^---\n([\s\S]*?)\n---\n/)?.[1].match(/^description:\s*(.*)$/m)?.[1].trim() ?? '';
 
-// 1. Installation: exactly one agent, the architect, with frontmatter naming it and pointing to the skill.
+// Size targets (LC-6, LC-8) are measured and printed; only the ceiling fails. A target is a design aim,
+// never a reason to cut an essential instruction, so the ceiling sits well above it.
+const BUDGET = {
+  agentBytes: { target: 6000, ceiling: 8000 },
+  agentLines: { target: 80, ceiling: 110 },
+  descriptionChars: { target: 300, ceiling: 400 },
+};
+const measurements = [];
+const measure = (file, what, value, { target, ceiling }) => {
+  measurements.push(`${file}: ${what} ${value} (target ${target}, ceiling ${ceiling})${value > target ? ' ABOVE TARGET' : ''}`);
+  if (value > ceiling) fail(file, `${what} ${value} exceeds the ceiling ${ceiling}`);
+};
+
+// 1. Installation: exactly one agent, the architect, with frontmatter naming it and naming the skill.
 const AGENT = `${AGENT_DIR}/continuum-architect.md`;
 const agentNames = [];
 if (agentFiles.length !== 1 || agentFiles[0] !== AGENT) fail(AGENT_DIR, `expected only continuum-architect.md, found ${agentFiles.join(', ') || 'none'}`);
@@ -33,10 +51,43 @@ for (const f of agentFiles) {
   if (name !== base) fail(f, `frontmatter name "${name}" does not match file name "${base}"`);
   if (!/^description:\s*\S/m.test(fm[1])) fail(f, 'frontmatter has no description');
   if (/^tools:/m.test(fm[1])) fail(f, 'the architect must keep the full tool set (no tools: line)');
-  if (!text[f].includes('.claude/skills/continuum-authoring/SKILL.md')) fail(f, 'does not point to the skill');
+  if (!text[f].includes('continuum-authoring')) fail(f, 'does not name the continuum-authoring skill');
   agentNames.push(base);
 }
 if (!/^name:\s*continuum-authoring$/m.test(skill)) fail(SKILL, 'skill frontmatter name is not continuum-authoring');
+
+// 1b. The partner's always-loaded instructions: measured against the targets, failing only above the ceiling,
+//     and with no instruction to read or load anything before the conversation starts.
+for (const f of agentFiles) {
+  const body = text[f];
+  measure(f, 'bytes', Buffer.byteLength(body, 'utf8'), BUDGET.agentBytes);
+  measure(f, 'lines', body.endsWith('\n') ? body.split('\n').length - 1 : body.split('\n').length, BUDGET.agentLines);
+  measure(f, 'description chars', descriptionOf(body).length, BUDGET.descriptionChars);
+  const preload = [
+    /first,?\s+read/i, /read the protocol/i, /load the\b[^.\n]{0,60}\bskill first/i,
+    /\bread\b[^.\n]{0,60}\bfirst\b/i, /before (?:the|your) first (?:exchange|question|reply|answer)/i,
+  ];
+  for (const re of preload) {
+    const m = body.match(re);
+    if (m) fail(f, `mandatory preload instruction: "${m[0]}"`);
+  }
+}
+measure(SKILL, 'description chars', descriptionOf(skill).length, BUDGET.descriptionChars);
+if (/read (?:this file|the protocol) first/i.test(skill)) fail(SKILL, 'the entry point asks to be read first');
+
+// 1c. The entry point indexes its references: every reference it names exists, and every reference file is
+//     named. A reference the agent names (`<name>.md`, lower case) must exist too.
+{
+  const named = new Set([...skill.matchAll(/references\/([A-Za-z0-9._-]+\.md)/g)].map((m) => m[1]));
+  for (const n of named) if (!refFiles.includes(n)) fail(SKILL, `names references/${n}, which does not exist`);
+  for (const r of refFiles) if (!named.has(r)) fail(SKILL, `does not index references/${r}`);
+  if (!refFiles.length) fail(REF_DIR, 'no reference files');
+  for (const f of agentFiles) {
+    for (const m of text[f].matchAll(/`([a-z0-9-]+\.md)`/g)) {
+      if (!refFiles.includes(m[1])) fail(f, `names ${m[1]}, which is not a reference of the skill`);
+    }
+  }
+}
 
 // 2. No removed agent is named anywhere, except where the README tells upgraders to delete them.
 const removed = /continuum-(?:adl|bdl|tech|acceptance|diagram)-author|continuum-researcher/g;
@@ -47,17 +98,19 @@ for (const f of docs) {
   }
 }
 
-// 2b. The mode rules are stated where the agent reads them.
-for (const [needle, where] of [
-  ['Every session is intent-first unless the human explicitly asks for development-ready output', SKILL],
-  ['applies **only** when development-ready output was explicitly requested', SKILL],
-  ['Never edit an adopted file to record a proposal', SKILL],
-  ['No in-place maintenance', SKILL],
-  ['Never perform or claim them', SKILL],
-  ['## 5. Intent-first authoring (the default)', SKILL],
-  ['## 8. Development-ready mode', SKILL],
+// 2b. The mode and authority rules are stated in the reference that holds them.
+for (const [needle, name] of [
+  ['Every session is intent-first unless the human explicitly asks for development-ready output', 'intent-first.md'],
+  ['applies **only** when development-ready output was explicitly requested', 'development-ready.md'],
+  ['Never edit an adopted file to record a proposal', 'package-and-lifecycle.md'],
+  ['No in-place maintenance', 'package-and-lifecycle.md'],
+  ['Never perform or claim them', 'authority-and-tools.md'],
+  ['needs no Continuum artifact', 'authority-and-tools.md'],
+  ['## 5. Intent-first authoring (the default)', 'intent-first.md'],
+  ['## 8. Development-ready mode', 'development-ready.md'],
 ]) {
-  if (!text[where].includes(needle)) fail(where, `missing rule: "${needle}"`);
+  const where = refPath(name);
+  if (!text[where]?.includes(needle)) fail(where, `missing rule: "${needle}"`);
 }
 
 // 2c. README permission example: parses, allows nothing broad, denies every human-only act.
@@ -80,8 +133,11 @@ for (const [needle, where] of [
 }
 
 // 3. Section references. "`<uri>` §N", "§N–§M" after a URI, and "<guide short name> §N" must be
-//    section ids recorded for that guide; every other §N must be a numbered section of the skill.
-const sections = new Set([...skill.matchAll(/^## (\d+)\. /gm)].map((m) => m[1]));
+//    section ids recorded for that guide. Every other §N names its file: "`<reference>.md` §N" must be a
+//    numbered section of that reference; a bare §N inside a reference must be a section of the same file; a
+//    bare §N anywhere else is dangling. "`<other file>.md` §N" is that file's own section and is not checked.
+const sectionsOf = new Map(refFiles.map((r) => [r, new Set([...text[refPath(r)].matchAll(/^## (\d+)\. /gm)].map((m) => m[1]))]));
+const sections = new Set([...sectionsOf.values()].flatMap((s) => [...s]));
 const guideRef = /(?:`(continuum[a-z-]*:\/\/[^`\s]+)`|\b(package-formats|development-package|development-workflow|repository-to-source))((?:\s*(?:§[\d.]*\d|–|-|,|and))+)/g;
 const consumed = new Map();
 for (const f of docs) {
@@ -100,11 +156,16 @@ for (const f of docs) {
   }
   consumed.set(f, spans);
 }
+const fileBefore = /`([^`\s]*\.(?:md|json))`\s*(?:§[\d.]*\d[^\S\n]*(?:,|and|or|–|-)[^\S\n]*)*$/;
 for (const f of docs) {
+  const own = f.startsWith(`${REF_DIR}/`) ? f.slice(REF_DIR.length + 1) : null;
   for (const m of text[f].matchAll(/§([\d.]*\d)/g)) {
     if (consumed.get(f).has(m.index)) continue;
-    if (/`[^`]*\.(md|json)`\s*$/.test(text[f].slice(Math.max(0, m.index - 60), m.index))) continue; // a file's own §
-    if (!sections.has(m[1])) fail(f, `§${m[1]} is not a section of the skill`);
+    const named = text[f].slice(Math.max(0, m.index - 120), m.index).match(fileBefore)?.[1];
+    const file = named ? named.split('/').pop() : own;
+    if (named && !refFiles.includes(file)) continue; // another file's own §
+    if (!file) { fail(f, `dangling §${m[1]}: name the reference file it is in`); continue; }
+    if (!sectionsOf.get(file)?.has(m[1])) fail(f, `§${m[1]} is not a section of ${file}`);
   }
 }
 
@@ -170,9 +231,10 @@ if (Number.isNaN(age)) fail('tools/surface.json', 'verified is not a date');
 else if (age > 45) warnings.push(`tools/surface.json was last verified ${age} days ago; run tools/LIVE-CHECKS.md`);
 for (const p of surface.liveProbes ?? []) if (!p.verified || !p.result) fail('tools/surface.json', `live probe without date or result: ${p.probe}`);
 
+for (const m of measurements) console.log(`measured ${m}`);
 for (const w of warnings) console.warn(`warning: ${w}`);
 if (failures.length) {
   console.error(`static check failed (${failures.length}):\n- ${failures.join('\n- ')}`);
   process.exit(1);
 }
-console.log(`static check passed: ${agentNames.length} agent (${agentNames.join(', ')}), ${sections.size} skill sections, permission example checked; live surface recorded ${surface.verified} (${age} days ago, not re-verified by this check)`);
+console.log(`static check passed: ${agentNames.length} agent (${agentNames.join(', ')}), skill entry point indexing ${refFiles.length} references (${sections.size} sections), permission example checked; live surface recorded ${surface.verified} (${age} days ago, not re-verified by this check)`);

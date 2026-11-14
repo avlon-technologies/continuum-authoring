@@ -1,6 +1,6 @@
 # Continuum Authoring
 
-A Claude Code architecture agent that works with you to **discover, preserve and evolve the architectural intent** of a product idea, a proposed change or an existing codebase. It holds an architectural conversation, challenges questionable choices, and records the decisions that matter in Continuum artifacts: a compiled architecture model, a business model where it helps, technology bindings, decisions, principles and grounded diagrams. Architecture intent is the objective; the artifacts are its representation.
+A Claude Code architecture partner that works with you to **discover, preserve and evolve the architectural intent** of a product idea, a proposed change or an existing codebase. It holds an architectural conversation, challenges questionable choices, and records the decisions that matter in Continuum artifacts: a compiled architecture model, a business model where it helps, technology bindings, decisions, principles and grounded diagrams. Architecture intent is the objective; the artifacts are its representation. Its always-loaded instructions are small; the Continuum skills and the authoring references load only when the conversation needs them.
 
 When you explicitly ask for it, the same agent produces a **development-ready Continuum package** instead: complete bindings, executable acceptance scenarios, a verified diagram set and a built, checked package, ready to hand to a developer or coding agent.
 
@@ -17,7 +17,7 @@ This repository is the authoring framework. It does not implement your product.
 | Ends when | sufficient architectural clarity: decisions agreed or explicitly open with an owner | every row of the readiness table holds, or the result is Partial with the gaps named |
 | Ends with | a short `continuum/HANDOFF.md` (or, beside an adopted package, the change's proposal record): what intent was learned, where it is preserved, what is verifiable versus a human judgment, what can proceed, what blocks, effort spent | `continuum/HANDOFF.md` with the readiness level, evidence per artifact, gaps, review findings and retrospective |
 
-Neither mode makes verification claims of its own. Compilation shows the model is legal, not that an implementation is correct; the agent reports what the tools that ran established, and flags which expectations deserve verification and which need human judgment. A development-ready request is never silently reduced, and an intent-first conversation is never silently turned into package production. Both modes are defined in the [protocol skill](.claude/skills/continuum-authoring/SKILL.md): §5 (intent-first) and §8 (development-ready).
+Neither mode makes verification claims of its own. Compilation shows the model is legal, not that an implementation is correct; the agent reports what the tools that ran established, and flags which expectations deserve verification and which need human judgment. A development-ready request is never silently reduced, and an intent-first conversation is never silently turned into package production. Both modes are defined in the skill's references: [intent-first](.claude/skills/continuum-authoring/references/intent-first.md) and [development-ready](.claude/skills/continuum-authoring/references/development-ready.md).
 
 ## What is Continuum?
 
@@ -46,7 +46,7 @@ Despite the `dev` in their names, these hostnames are the production preview ser
 
 | | Limit |
 |---|---|
-| Diagram model snapshots | 16 live per account, no delete, each expires 24 hours after import |
+| Diagram model snapshots | 16 live per account; each expires 24 hours after import, or sooner when released (`continuum diagram release <id>`) |
 | Diagram import | 64 files, 4 MiB per file, 16 MiB per package, 192 KiB per inline call (larger packages are uploaded in chunks) |
 | Authoring workspaces | not durable: expire after 2 hours idle, and can be lost sooner on a server restart, scale-to-zero or eviction (more than 64 held). The agent keeps every file on disk and re-creates workspaces. |
 | Other rate limits | not published. When a server refuses, the agent stops that line of work and reports it. |
@@ -71,7 +71,7 @@ The MCP servers handle authoring, compiling, querying, behaviour preview and cha
 | Development package built and checked | no | yes |
 | Highest honest result (development-ready mode) | **Authored — package UNVERIFIED** | **Development-ready** |
 
-Intent-first conversations need only the Continuum MCP server, plus the Diagram server when a picture helps. In development-ready mode the agent tells you at the start which route you are on, and it never claims a check that did not run. What each route can author, verify and leave unverified, artifact by artifact, is in the [skill's tool routes](.claude/skills/continuum-authoring/SKILL.md#2-tool-routes-mcp-first-cli-optional).
+Intent-first conversations need only the Continuum MCP server, plus the Diagram server when a picture helps. In development-ready mode the agent tells you at the start which route you are on, and it never claims a check that did not run. What each route can author, verify and leave unverified, artifact by artifact, is in the [skill's tool routes](.claude/skills/continuum-authoring/references/authority-and-tools.md#2-tool-routes-mcp-first-cli-optional).
 
 ## Setup
 
@@ -84,13 +84,23 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
 
    Start Claude Code, run `/mcp`, choose each server and sign in in the browser window it opens (OAuth), with the account you were invited with. If sign-in or the first tool call fails, check that your invitation is active.
 
-2. **Install the agent and its protocol.** Two files are the whole installation:
+2. **Install the partner and its skill.** The installation is the agent file and one skill directory:
 
    ```
    <your-project>/.claude/
-     agents/continuum-architect.md              the agent
-     skills/continuum-authoring/SKILL.md        the protocol it follows
+     agents/continuum-architect.md              the partner (always loaded when you run it)
+     skills/continuum-authoring/SKILL.md        the skill's entry point: when to load which reference
+     skills/continuum-authoring/references/     authority and tools, package and lifecycle, intent-first,
+                                                artifacts, diagrams, development-ready, failures
    ```
+
+   **Primary path: `continuum install`.** The Continuum project kit carries this agent and this skill, together with the Continuum skills the partner loads on demand (`understand-architecture`, `author-architecture`, `change-architecture`, `recover-architecture`, `reconcile-architecture`, `implement-against-architecture`, `development-package`, `continuum-diagram`). It copies them **verbatim from a pinned commit of this repository**, so an installed file is byte-identical to the file here at that commit, and `continuum update` replaces it safely. The kit release that carries them is the next one; until it is published, use the fallback.
+
+   ```sh
+   continuum install
+   ```
+
+   **Fallback: copy by hand.** This installs only this repository's two paths; the Continuum skills named above come from the kit, and without them the partner still converses and preserves intent, but loads less on demand.
 
    ```sh
    git clone https://github.com/avlon-technologies/continuum-authoring.git
@@ -99,7 +109,7 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
    cp -r continuum-authoring/.claude/skills/continuum-authoring <your-project>/.claude/skills/
    ```
 
-   To use it in every project instead, copy the same two paths under `~/.claude/`. In Claude Code, `/agents` should list `continuum-architect`. If you installed an earlier version, delete its six specialist agent files (`continuum-adl-author`, `-bdl-author`, `-tech-author`, `-acceptance-author`, `-diagram-author`, `continuum-researcher`); they are no longer used.
+   To use a hand copy in every project instead, copy the same two paths under `~/.claude/`. In Claude Code, `/agents` should list `continuum-architect`. If you installed an earlier version, delete its six specialist agent files (`continuum-adl-author`, `-bdl-author`, `-tech-author`, `-acceptance-author`, `-diagram-author`, `continuum-researcher`); they are no longer used.
 
 3. **Permissions (optional).** Claude Code asks before each tool call. To approve the Continuum tools once for the project, add to `<your-project>/.claude/settings.json`:
 
@@ -190,8 +200,9 @@ What happens:
 
 | Path | Purpose |
 |---|---|
-| [`.claude/agents/continuum-architect.md`](.claude/agents/continuum-architect.md) | The agent: how it runs the conversation |
-| [`.claude/skills/continuum-authoring/SKILL.md`](.claude/skills/continuum-authoring/SKILL.md) | The protocol: authority, tool routes, lifecycle, both modes, how to author each artifact |
+| [`.claude/agents/continuum-architect.md`](.claude/agents/continuum-architect.md) | The partner: purpose, conversation, judgment, continuity, authority, and when to load what |
+| [`.claude/skills/continuum-authoring/SKILL.md`](.claude/skills/continuum-authoring/SKILL.md) | The skill's entry point: an index saying when to load each reference |
+| [`.claude/skills/continuum-authoring/references/`](.claude/skills/continuum-authoring/references/authority-and-tools.md) | The references: authority and tool routes, package and lifecycle, intent-first, each artifact, diagrams, development-ready, failures |
 | [`VISION.md`](VISION.md), [`EXPERIMENT.md`](EXPERIMENT.md) | Why it is designed this way, and how to evaluate a session |
 | [`tools/`](tools/LIVE-CHECKS.md) | Maintainer checks (below); not installed |
 
@@ -201,14 +212,14 @@ What happens:
 - The guides' package layouts do not list the `.bdl` business model, so whether the package build includes it is unverified.
 - `continuum_process_graph` refuses queries through MCP; the agent uses `continuum_preview`, which returns the same causal traces from every entry message.
 - Binding checks through a diagram import have not been exercised live yet (diagram quota).
-- The Diagram server's snapshot limit can block new diagrams until older snapshots expire. A development-ready session whose final diagrams are blocked ends at **Partial**, with the planned views recorded so they can run later.
+- The Diagram server's snapshot limit can block new diagrams until older snapshots expire or are released. A development-ready session whose final diagrams are blocked ends at **Partial**, with the planned views recorded so they can run later.
 - The agent produces architecture, not code, and its judgments of quality and fitness are reasoning, not proof. Only the compilers' verdicts are proof, and only of legality.
 
 ## Maintaining this repository
 
 Two kinds of check, kept apart:
 
-- **Static** — `node tools/check.mjs`, run by CI on every push. No network. It checks that the installation is exactly the one agent and the skill, that every skill and guide section reference resolves, that no removed agent is still named, that the README's permission example parses, allows nothing broad and denies every human-only act, quoted limits, links and known-stale terms; and that every cited tool, knowledge URI and guide section is in `tools/surface.json`, a dated record of the live servers. It catches drift in names, references and numbers, not contradictions in meaning.
+- **Static** — `node tools/check.mjs`, run by CI on every push. No network. It checks that the installation is exactly the one agent and the skill; measures the agent's bytes, lines and description length and the skill's description length against their targets (6,000 bytes, 80 lines, 300 characters), printing each and failing only above a ceiling (8,000, 110, 400), because a target is not a reason to cut an essential instruction; that the agent carries no instruction to read or load anything first; that every reference the entry point names exists and every reference is indexed; that every guide section reference and every "`<reference>.md` §n" resolves, with no dangling §n; that no removed agent is still named, that the README's permission example parses, allows nothing broad and denies every human-only act, quoted limits, links and known-stale terms; and that every cited tool, knowledge URI and guide section is in `tools/surface.json`, a dated record of the live servers. It catches drift in names, references and numbers, not contradictions in meaning.
 - **Live** — [`tools/LIVE-CHECKS.md`](tools/LIVE-CHECKS.md), run by a maintainer with both servers connected before each release: refresh the record, re-run the route probes, and re-read the guide sections the agents rely on. The static check warns when the record is more than 45 days old.
 
 ## License
