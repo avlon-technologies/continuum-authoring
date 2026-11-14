@@ -41,4 +41,4 @@ continuum/
 
 With **no** adopted package (no ledger, or no `current` entry), `GOAL.md` is the intent record and the session outcome goes in `HANDOFF.md`; editing authored files there is ordinary authoring, and documented, semantics-preserving refreshes of pins and DERIVED files are allowed when inputs are stable (record the command and the before/after diff).
 
-**Building.** `continuum package build` rewrites DERIVED files in place; when `development-package.json` names `semantic.change` (change mode) it requires `--out <dir>` (package-formats §1). Never on an adopted package (above).
+**Building.** `continuum package build` rewrites DERIVED files in place, always: the client CLI has no `--out` (that option belongs to the toolchain's own `tools/development-package.mjs`, which a client does not have). A change-mode spec (`semantic.change`) therefore writes state B's derived files over the package it sits in. So never on an adopted package (above): a change to an adopted package is built by its transition (`continuum icp materialize`, into the transition's own `result/`).

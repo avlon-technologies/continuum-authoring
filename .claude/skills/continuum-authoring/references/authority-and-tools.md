@@ -21,14 +21,16 @@ Part of the `continuum-authoring` skill ([index](../SKILL.md)). Loaded when the 
 
 ## 2. Tool routes: MCP first, CLI optional
 
-The Continuum MCP server is the primary route and needs nothing installed. The `continuum` CLI is optional and not publicly distributed; when it is installed (`continuum --version` answers), it adds the operations marked CLI below. Both reach the same Host compiler, so their verdicts are equal evidence. **Status** records what was exercised live against the public servers on 2026-11-12.
+The Continuum MCP server is the primary route and needs nothing installed. The `continuum` CLI is optional and distributed through the Continuum package feed; when it is installed (`continuum --version` answers), it adds the operations marked CLI below. Both reach the same Host compiler, so their verdicts are equal evidence. **Status** records what was exercised live against the public servers on 2026-11-12.
+
+**In a repository set up by `continuum install`** the CLI is present, and the `continuum` MCP server it configures is the *local bridge*: it reads paths on this machine (`manifestPath`, `packageDir`) and does not serve the hosted-only `continuum_workspace_*`, `continuum_principle_*` and `continuum_exception_*` tools. There, pass paths or use the CLI; the workspace routes below apply only to the hosted Continuum Architect server.
 
 | Operation | MCP route | CLI route | Status |
 |---|---|---|---|
 | Read knowledge | `continuum_knowledge` (`index`, or `index` with `uri` for a section map; `search`; `read` with `uri` + `section`) | — | verified |
 | Draft and compile ADL | `continuum_workspace_create` (manifest + documents as plain text), `continuum_workspace_edit`, `continuum_workspace_compile` | `continuum compile <manifest> --state --json` | verified |
 | Query and behaviour preview | `continuum_query` and `continuum_preview` with `workspace: <workspaceId>`. `continuum_preview` returns the causal trace from every entry message, declared causal closure, and the model's silences (undeclared reactions, missing correlation) | `continuum preview` | verified |
-| Causality between two messages | `continuum_process_graph` refused every query form through MCP; use `continuum_preview` | `continuum` process-graph commands | **not usable via MCP** |
+| Causality between two messages | `continuum_process_graph` refused every query form at stage `input` ("one of trace, paths, impact, dependencies or explain is required"), on the hosted server and, on 2026-11-14, on the local bridge too; use `continuum_preview` and say the process graph was unavailable | `continuum compile <manifest> --trace\|--impact\|--dependencies` is refused the same way (CLI 0.36.3); `continuum preview` works | **not usable on any route** |
 | Validate and apply an `.adl-change` | `continuum_apply` with `workspace: <model's workspaceId>`, `manifestPath`, `changePath`, and `files: { "<change>.adl-change": <base64> }` | `continuum apply <manifest> <change> --emit-source <dir>` | verified (`applied`, base and result state) |
 | Derive a change between two states | `continuum_diff` with both states as payloads | `continuum diff <A-manifest> <B-manifest> --out <dir>` (`artifacts.md` §6) | CLI verified 2026-11-13 (`verified true`); MCP not exercised |
 | Compile and inspect BDL | `continuum_workspace_edit` `create-document` `<name>.bdl` (beside the draft, not in the manifest), then `continuum_business_compile` / `_inspect` with `workspace` and `artifact: "<name>.bdl"`; or send the `.bdl` in `files` as the host guide shows | `continuum business compile\|inspect <file>` | workspace route verified |
