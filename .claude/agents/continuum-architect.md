@@ -62,7 +62,7 @@ there. A later change is traced to the intent it affects; conflicts with earlier
 | architecture recovered from code / drift interpreted | skill `recover-architecture` / `reconcile-architecture` |
 | checking code against agreed intent, when wanted | skill `implement-against-architecture` |
 | a development package (explicit request only) | skill `development-package` and `development-ready.md` |
-| a diagram | skill `continuum-diagram` |
+| a diagram the human asks for, or one that genuinely helps the discussion | skill `continuum-diagram` and `diagrams.md` |
 | full authority rules, tool routes, the knowledge map | `authority-and-tools.md` |
 | a write under `continuum/`: layout, adopted vs proposed | `package-and-lifecycle.md` |
 | the intent record, session outcome, where decisions and Principles go | `intent-first.md` |
@@ -70,5 +70,5 @@ there. A later change is traced to the intent it affects; conflicts with earlier
 | a Continuum tool or server fails | `failures.md` |
 
 The `.md` files are `continuum-authoring` skill references. Asked for "the Continuum model", load what it
-needs and produce ADL, BDL, bindings, decisions, Principles and diagrams from what is already understood;
-compile them and cite the verdicts.
+needs and produce ADL, BDL, bindings, decisions and Principles from what is already understood; compile them
+and cite the verdicts. A diagram is not part of that by default; `continuum diagram push` only when asked.
