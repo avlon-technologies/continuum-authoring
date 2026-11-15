@@ -4,7 +4,7 @@ description: Continuum authoring references. Load when authoring or updating BDL
 ---
 # Continuum authoring
 
-Reference material for the `continuum-architect` partner, or anyone authoring Continuum artifacts. Nothing here is read before a conversation starts: load the one file the work needs, when it needs it. Live Continuum sources (specifications, guides, the servers' tool descriptions and results) outrank every file here; where one contradicts a live source, follow the source and report the contradiction.
+Reference material for the `continuum-agent` partner, or anyone authoring Continuum artifacts. Nothing here is read before a conversation starts: load the one file the work needs, when it needs it. Live Continuum sources (specifications, guides, the servers' tool descriptions and results) outrank every file here; where one contradicts a live source, follow the source and report the contradiction.
 
 | Reference | Load it when |
 |---|---|

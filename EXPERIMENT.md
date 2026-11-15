@@ -1,6 +1,6 @@
 # Evaluating an authoring session
 
-A template for judging a `continuum-architect` session on a real project. Use it on your own projects; maintainers use it to improve the agent and its protocol. Keep the session transcript; it is the main evidence.
+A template for judging a `continuum-agent` session on a real project. Use it on your own projects; maintainers use it to improve the agent and its protocol. Keep the session transcript; it is the main evidence.
 
 ## Intent-first session (default mode)
 Run one real architecture conversation and record:

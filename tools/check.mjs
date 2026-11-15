@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// STATIC consistency checks for the continuum-architect agent and its skill. No dependencies, no network.
+// STATIC consistency checks for the continuum-agent agent and its skill. No dependencies, no network.
 // It compares the documents with each other and with tools/surface.json, a dated record of the
 // live servers. It cannot see the servers: live verification is the procedure in tools/LIVE-CHECKS.md.
 // Usage: node tools/check.mjs        (exit 1 on any failure)
@@ -40,9 +40,9 @@ const measure = (file, what, value, { target, ceiling }) => {
 };
 
 // 1. Installation: exactly one agent, the architect, with frontmatter naming it and naming the skill.
-const AGENT = `${AGENT_DIR}/continuum-architect.md`;
+const AGENT = `${AGENT_DIR}/continuum-agent.md`;
 const agentNames = [];
-if (agentFiles.length !== 1 || agentFiles[0] !== AGENT) fail(AGENT_DIR, `expected only continuum-architect.md, found ${agentFiles.join(', ') || 'none'}`);
+if (agentFiles.length !== 1 || agentFiles[0] !== AGENT) fail(AGENT_DIR, `expected only continuum-agent.md, found ${agentFiles.join(', ') || 'none'}`);
 for (const f of agentFiles) {
   const fm = text[f].match(/^---\n([\s\S]*?)\n---\n/);
   if (!fm) { fail(f, 'missing frontmatter'); continue; }
