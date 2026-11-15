@@ -88,7 +88,7 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
 
    ```
    <your-project>/.claude/
-     agents/continuum-architect.md              the partner (always loaded when you run it)
+     agents/continuum-agent.md                  the partner (always loaded when you run it)
      skills/continuum-authoring/SKILL.md        the skill's entry point: when to load which reference
      skills/continuum-authoring/references/     authority and tools, package and lifecycle, intent-first,
                                                 artifacts, diagrams, development-ready, failures
@@ -105,11 +105,11 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
    ```sh
    git clone https://github.com/avlon-technologies/continuum-authoring.git
    mkdir -p <your-project>/.claude/agents <your-project>/.claude/skills
-   cp continuum-authoring/.claude/agents/continuum-architect.md <your-project>/.claude/agents/
+   cp continuum-authoring/.claude/agents/continuum-agent.md <your-project>/.claude/agents/
    cp -r continuum-authoring/.claude/skills/continuum-authoring <your-project>/.claude/skills/
    ```
 
-   To use a hand copy in every project instead, copy the same two paths under `~/.claude/`. In Claude Code, `/agents` should list `continuum-architect`. If you installed an earlier version, delete its six specialist agent files (`continuum-adl-author`, `-bdl-author`, `-tech-author`, `-acceptance-author`, `-diagram-author`, `continuum-researcher`); they are no longer used.
+   To use a hand copy in every project instead, copy the same two paths under `~/.claude/`. In Claude Code, `/agents` should list `continuum-agent`. If you installed an earlier version, delete its six specialist agent files (`continuum-adl-author`, `-bdl-author`, `-tech-author`, `-acceptance-author`, `-diagram-author`, `continuum-researcher`); they are no longer used.
 
 3. **Permissions (optional).** Claude Code asks before each tool call. To approve the Continuum tools once for the project, add to `<your-project>/.claude/settings.json`:
 
@@ -163,7 +163,7 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
 From your project, start Claude Code **with the agent as the main session**:
 
 ```sh
-claude --agent continuum-architect
+claude --agent continuum-agent
 ```
 
 Running it as the main session keeps it in conversation with you. It does not need to start other agents; in development-ready mode it may start one built-in reviewer subagent, which only a main session can do.
@@ -200,7 +200,7 @@ What happens:
 
 | Path | Purpose |
 |---|---|
-| [`.claude/agents/continuum-architect.md`](.claude/agents/continuum-architect.md) | The partner: purpose, conversation, judgment, continuity, authority, and when to load what |
+| [`.claude/agents/continuum-agent.md`](.claude/agents/continuum-agent.md) | The partner: purpose, conversation, judgment, continuity, authority, and when to load what |
 | [`.claude/skills/continuum-authoring/SKILL.md`](.claude/skills/continuum-authoring/SKILL.md) | The skill's entry point: an index saying when to load each reference |
 | [`.claude/skills/continuum-authoring/references/`](.claude/skills/continuum-authoring/references/authority-and-tools.md) | The references: authority and tool routes, package and lifecycle, intent-first, each artifact, diagrams, development-ready, failures |
 | [`VISION.md`](VISION.md), [`EXPERIMENT.md`](EXPERIMENT.md) | Why it is designed this way, and how to evaluate a session |
