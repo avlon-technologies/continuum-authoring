@@ -36,12 +36,25 @@ The Continuum MCP server is the primary route and needs nothing installed. The `
 | Compile and inspect BDL | `continuum_workspace_edit` `create-document` `<name>.bdl` (beside the draft, not in the manifest), then `continuum_business_compile` / `_inspect` with `workspace` and `artifact: "<name>.bdl"`; or send the `.bdl` in `files` as the host guide shows | `continuum business compile\|inspect <file>` | workspace route verified |
 | Recovery citations | `continuum_workspace_edit` takes `evidence` (citations) and `subjects` per edit; `continuum_workspace_inspect` reports what is cited. The host verifies nothing | `continuum evidence init` / `suggest` / `refresh` / `check` (writes `evidence.json`) | `evidence.json` is **CLI only** |
 | Current lifecycle state | read `continuum/ledger.json` (its `current` entry) | `continuum status`, `continuum icp state` | file read |
-| Decisions and principles | `continuum_decision_list` / `_show` / `_propose` (others need §1 authority); `continuum_principle_list` / `_show` / `_check` | — | tools present, not exercised |
+| Decisions, principles and exceptions | `continuum_decision_list` / `continuum_decision_show` / `continuum_decision_propose` (others need §1 authority); `continuum_principle_list` / `continuum_principle_show` / `continuum_principle_check`; the rest, and when to use each, in the table below | — | tools present, not exercised |
 | Diagrams | Continuum Diagram server (`diagrams.md` §7) | — | verified (subject to the snapshot quota) |
 | Bindings and claims: validate | **None on the Architect server.** Partial: a diagram import with bindings (`diagrams.md` §7) compiles them against the model and refuses an invalid or stale one | `continuum package realize`, `bind refresh`, `build` | **platform gap**; import route not exercised |
 | Acceptance scenarios: validate | **None.** Each reference can be confirmed with `continuum_query` | `continuum package build` | **platform gap** |
 | Build, check, run the package | **None** (`continuum_package_check` checks only an already-built package) | `continuum package build\|check\|run` | **platform gap** |
 | Lifecycle acts, guard, reconcile | — | `continuum icp …`, `continuum guard ci`, `continuum reconcile plan` | CLI only |
+
+**Decisions, principles and exceptions: when to use each tool.** Reads are yours to make. Every act is recorded by the Host as the agent's, never the person's, and only where Host policy grants it; §1 says whose decision each one is.
+
+| Tool | Kind | When to use it |
+|---|---|---|
+| `continuum_decision_show` | read | Before relying on, citing or proposing against one decision (`continuum_decision_list` finds it): what it says, who decided it under which authority, and what has been recorded about it since. |
+| `continuum_decision_evidence` | act | To record implementation evidence you report for an *accepted* decision (`established`, `not-established` or `partial`). The Host records it as reported, never as verified, and refuses a body that claims verification. Ask the person first, and never present it as verification. |
+| `continuum_decision_reject` | act, the person's | Only when the person has decided that a *proposed* decision is rejected, with their reason. Like `continuum_decision_accept`, it is the human's under §1: never on your own initiative. |
+| `continuum_decision_revoke` | act, the person's | Only when the person has decided to revoke an *accepted* decision, with their reason. The human's under §1: never on your own initiative. |
+| `continuum_decision_supersede` | act, the person's | Only when the person has decided that a later *accepted* decision (`by`) supersedes an accepted one, with their reason. The human's under §1: never on your own initiative. |
+| `continuum_principle_show` | read | Before taking a position on one principle or proposing an exception to it: its statement, strength, subjects, assessment mode and exception policy, with every version and its history. |
+| `continuum_exception_propose` | act, a proposal | When one decision departs from an *active* principle and its standing (`continuum_principle_check`) calls for an exception. Not for an advisory principle (the departure is noted on the decision), and the Host refuses where the principle's exception policy forbids one. `space` is the registry id. Proposed is not valid: approval is a separate party's, through the CLI, never yours and never through MCP, so never report the exception as approved. |
+| `continuum_exception_show` | read | Before relying on an exception: what it says, what it pins, and whether it stands now (valid, expired, stale, proposed, denied or revoked). It is valid only while approved, unexpired and still pinned to the active principle version and the decision's current content revision. |
 
 **What each route can author, verify, and leaves unverified:**
 
