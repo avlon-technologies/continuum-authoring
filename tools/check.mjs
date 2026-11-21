@@ -225,6 +225,18 @@ for (const f of docs) {
   }
 }
 
+// 10b. CLI options the released client CLI does not have (skill audit 2026-11-14, CLI 0.36.3). `package build`
+//      writes in place: `--out` is the toolchain's tools/development-package.mjs, never the client's, and an
+//      instruction to pass it on an adopted package rewrites that package. Nor does `package check` take
+//      `--change` (the change-pin proof is continuum_package_check {packageDir, changePath}).
+for (const f of docs) {
+  for (const line of text[f].split('\n')) {
+    if (/package build[^\n]*--out\b/.test(line) && !/no `--out`/.test(line)) fail(f, `passes --out to \`continuum package build\`, which the client CLI does not have: ${line.trim().slice(0, 100)}`);
+    if (/package check[^\n|]*--change\b/.test(line)) fail(f, 'passes --change to `continuum package check`, which the client CLI does not have');
+    if (/requires `--out <dir>`/.test(line)) fail(f, 'says a build requires --out, which the client CLI does not have');
+  }
+}
+
 // 11. The record itself is dated; warn when it is old.
 const age = Math.floor((Date.now() - Date.parse(surface.verified)) / 86400000);
 if (Number.isNaN(age)) fail('tools/surface.json', 'verified is not a date');

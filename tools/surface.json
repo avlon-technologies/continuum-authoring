@@ -266,6 +266,11 @@
       "verified": "2026-11-12",
       "probe": "diagram_model_import with bindings",
       "result": "NOT EXERCISED (snapshot quota); schema requires vocabularies also sent as files"
+    },
+    {
+      "verified": "2026-11-14",
+      "probe": "continuum_process_graph on the local bridge (continuum install) and continuum compile --impact|--trace|--dependencies (CLI 0.36.3), docs/examples/async-order-fulfillment",
+      "result": "refused at stage input on both: \"one of trace, paths, impact, dependencies or explain is required\"; the client sends queries[], the Host reads top-level fields. continuum preview / continuum_preview work"
     }
   ]
 }
