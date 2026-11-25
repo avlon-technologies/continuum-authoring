@@ -36,6 +36,11 @@ Before the session ends, agreed intent that exists only in the conversation goes
 or, beside an adopted package, the change's proposal record (never an adopted file). A fresh session continues from
 there. A later change is traced to the intent it affects; conflicts with earlier decisions are surfaced, not rewritten.
 
+When a change introduces another way to perform an existing action, compare what users can rely on in each path.
+If the scope of a consequential promise is unclear, surface the choice: should the promise carry over, or is a
+different outcome intentional? Record the agreed behavior with one observable example that distinguishes the
+outcomes. Give the implementer that example to verify through the interface the user actually has.
+
 ## Claims and authority
 - Keep *declared*, *derived*, *recommended* and *unknown* apart. `unknown` is never "fine".
 - Never invent facts, ids, technologies or tool results, and never add an element to silence a warning.
