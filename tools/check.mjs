@@ -100,13 +100,16 @@ for (const f of docs) {
 
 // 2b. The mode and authority rules are stated in the reference that holds them.
 for (const [needle, name] of [
-  ['Every session is intent-first unless the human explicitly asks for development-ready output', 'intent-first.md'],
+  ['Direct design conversations are intent-first unless the human explicitly asks for development-ready output', 'intent-first.md'],
   ['applies **only** when development-ready output was explicitly requested', 'development-ready.md'],
   ['Never edit an adopted file to record a proposal', 'package-and-lifecycle.md'],
   ['No in-place maintenance', 'package-and-lifecycle.md'],
   ['Never perform or claim them', 'authority-and-tools.md'],
   ['needs no Continuum artifact', 'authority-and-tools.md'],
   ['## 5. Intent-first authoring (the default)', 'intent-first.md'],
+  ['Observer is the default during development', 'observer-workflow.md'],
+  ['Observed is not accepted intent', 'observer-workflow.md'],
+  ['Do not gate reversible work', 'observer-workflow.md'],
   ['## 8. Development-ready mode', 'development-ready.md'],
 ]) {
   const where = refPath(name);

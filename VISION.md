@@ -1,11 +1,14 @@
 # Continuum Authoring — Vision
 
-Make Continuum authoring feel like collaborating with a capable architecture partner: a human or orchestrator describes goals, constraints and intent; one Claude Code agent helps discover, challenge, decide and preserve the architectural intent that matters, and, on request, delivers development-ready Continuum architecture.
+Aligned with [Continuum Vision V5](https://github.com/avlon-technologies/continuum-architecture/blob/main/VISION-V5.md): AI builds your software. Continuum understands it. One Claude Code architecture partner observes independent development, maintains architectural knowledge and offers advice when asked. It also supports direct design conversations and development-ready architecture on request.
 
 ## Outcome
-By default, the deliverable is **preserved architectural intent**: the consequential decisions, constraints and rationale, discovered in conversation and recorded in the Continuum artifacts that carry them, with what is verifiable distinguished from what needs human judgment. On explicit request, the deliverable is a **development-ready Continuum package** (with the CLI; MCP-only sessions reach *Authored — package UNVERIFIED*), not an implemented product.
+By default, the deliverable is **preserved architectural intent**: the consequential decisions, constraints and rationale, discovered from implementation evidence and conversations, distinguished from accepted commitments, and recorded in the Continuum artifacts that carry them, with what is verifiable distinguished from what needs human judgment. On explicit request, the deliverable is a **development-ready Continuum package** (with the CLI; MCP-only sessions reach *Authored — package UNVERIFIED*), not an implemented product.
 
-## Why intent-first is the default
+## Why continuous observation is the development default
+The developer owns implementation and need not consult Continuum for routine choices. The Architect independently captures consequential changes, preserves provenance, and reconciles at delivery boundaries. Where live observation is unavailable, inspect snapshots and report gaps. Neither peer supervises the other; existing accepted constraints and adoption authority remain binding. Success is durable understanding across changes, not consultation frequency.
+
+## Why intent-first remains the conversation default
 The earlier development-ready workflow could take more than 90 minutes where direct implementation took about 10, without demonstrably improving the product. Later verification experiments showed that a few well-chosen invariants (mutation authority, account isolation) catch meaningful defects ordinary tests miss, though those verifiers needed substantial earlier engineering. The conclusion is not that documentation is unnecessary or that every intent deserves a verifier: architectural reasoning should prioritize consequential decisions and evidence of value over exhaustive pre-implementation production. A real-agent trial on 2026-11-13 (per-principal usage quotas on an existing repository with an adopted package) supported this: one question round, eight agreed decisions preserved as a proven `.adl-change` and its proposal record, no adopted file touched, about 7 minutes of agent time.
 
 ## Why one agent

@@ -1,14 +1,18 @@
 # Continuum Authoring
 
-A Claude Code architecture partner that works with you to **discover, preserve and evolve the architectural intent** of a product idea, a proposed change or an existing codebase. It holds an architectural conversation, challenges questionable choices, and records the decisions that matter in Continuum artifacts: a compiled architecture model, a business model where it helps, technology bindings, decisions, principles and grounded diagrams. Architecture intent is the objective; the artifacts are its representation. Its always-loaded instructions are small; the Continuum skills and the authoring references load only when the conversation needs them.
+A Claude Code architecture partner that works with you to **discover, preserve and evolve the architectural intent** of a product idea, a proposed change or an existing codebase. It holds an architectural conversation, challenges questionable choices, and records the decisions that matter in Continuum artifacts: a compiled architecture model, a business model where it helps, technology bindings, decisions, principles and grounded diagrams. Architecture intent is the objective; the artifacts are its representation. Its always-loaded instructions are small; the Continuum skills and authoring references load when the work needs them. During development it acts as an independent observer, maintains the model incrementally, and advises either peer on demand.
 
 When you explicitly ask for it, the same agent produces a **development-ready Continuum package** instead: complete bindings, executable acceptance scenarios, a verified diagram set and a built, checked package, ready to hand to a developer or coding agent.
 
 This repository is the authoring framework. It does not implement your product.
 
-## Two authoring modes
+## Observer, advisor and direct authoring
 
-| | **Intent-first** (default) | **Development-ready** (on explicit request) |
+Observer is the default during development. The developer builds independently; the Architect inspects available revisions and maintains consequential architecture knowledge without requiring consultations, mandatory checkpoints or a complete upfront model. Advice is available to either peer on demand. Existing authority rules remain binding. See the [observer workflow](.claude/skills/continuum-authoring/references/observer-workflow.md).
+
+## Two direct authoring modes
+
+| | **Intent-first** (direct conversation default) | **Development-ready** (on explicit request) |
 |---|---|---|
 | Ask for it | anything else: "help me think through the architecture", "we want to add X", "model this" | "development-ready", "development package", "implementation-ready handoff for a coding agent" |
 | Aim | the consequential decisions and constraints are clear and preserved | a developer can build without inventing major decisions, with verification evidence |
@@ -53,7 +57,7 @@ Despite the `dev` in their names, these hostnames are the production preview ser
 
 The agent imports one diagram snapshot per model revision and reuses diagram runs to stay within the limits.
 
-**Claude usage.** Claude Code usage is billed by Anthropic as usual. Both modes run as one agent; a development-ready session is much larger (every artifact, the package build, the diagram set and one review subagent). For scale: one measured intent-first conversation (two turns, one proven change, no specialists) took about 7 minutes of agent time and 45 thousand output tokens; each independent review run while maintaining this repository used 100–125 thousand tokens on its own. No development-ready session has been measured end to end.
+**Claude usage.** Claude Code usage is billed by Anthropic as usual. All modes use the same architecture agent; a development-ready session is much larger (every artifact, the package build, the diagram set and one review subagent). For scale: one measured intent-first conversation (two turns, one proven change, no specialists) took about 7 minutes of agent time and 45 thousand output tokens; each independent review run while maintaining this repository used 100–125 thousand tokens on its own. No development-ready session has been measured end to end.
 
 **Your data.** The Continuum servers are hosted by Avlon. Every Architect tool states that it is answered on hosted infrastructure from content supplied with the request or held in a hosted workspace, never read from your machine. What the agent send is therefore processed there: model and business documents, bindings, scenarios when checked, file paths and line ranges from your code, and any code an agent quotes. No privacy or data-retention policy for the preview is published with the servers or this repository; ask in your access issue before using a repository whose architecture you may not share with a third party.
 
@@ -91,7 +95,7 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
      agents/continuum-architect.md              the partner (always loaded when you run it)
      skills/continuum-authoring/SKILL.md        the skill's entry point: when to load which reference
      skills/continuum-authoring/references/     authority and tools, package and lifecycle, intent-first,
-                                                artifacts, diagrams, development-ready, failures
+                                                artifacts, diagrams, development-ready, failures, observer-workflow
    ```
 
    **Primary path: `continuum install`.** The Continuum project kit carries this agent and this skill, together with the Continuum skills the partner loads on demand (`understand-architecture`, `author-architecture`, `change-architecture`, `recover-architecture`, `reconcile-architecture`, `implement-against-architecture`, `development-package`, `continuum-diagram`). It copies them **verbatim from a pinned commit of this repository**, so an installed file is byte-identical to the file here at that commit, and `continuum update` replaces it safely. The kit release that carries them is the next one; until it is published, use the fallback.
