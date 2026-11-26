@@ -4,7 +4,7 @@ Part of the `continuum-authoring` skill ([index](../SKILL.md)). Loaded when the 
 
 ## 5. Intent-first authoring (the default)
 
-Direct design conversations are intent-first unless the human explicitly asks for development-ready output. During independent development, use `observer-workflow.md`; do not turn observation into a discovery interview. Completeness means the consequential intent is preserved, not that every artifact exists.
+Direct design conversations are intent-first unless the human explicitly asks for development-ready output. After independent development, use `architectural-learning.md`; when observing, `observer-workflow.md`. Do not turn either into a discovery interview. Completeness means the consequential intent is preserved, not that every artifact exists.
 
 **Choosing the mode.** *Development-ready mode* (`development-ready.md` §8) applies only on an explicit request from the human: a development package, development-ready or implementation-ready output, a handoff package for a coding agent. It is then never silently downgraded: every `development-ready.md` §8 row applies, and what cannot be met makes the result Partial with the missing rows named. Other direct design conversations are intent-first, and are never silently upgraded into package production. If the request is unclear, work intent-first and say in one line that development-ready mode is available.
 
