@@ -13,7 +13,7 @@ This repository is the authoring framework. It does not implement your product.
 2. produces or reconciles the model;
 3. has it independently reviewed, and resolves or discloses the findings.
 
-For existing software, the model and its pinned implementation commit are the starting point, and the Architect reconciles the meaningful changes since. See [architectural learning](.claude/skills/continuum-authoring/references/architectural-learning.md).
+That is **Recover**. At each later change the Architect **Reconciles**: the model, its decisions and its pinned implementation commit are the starting point, and it examines the meaningful changes since and the code they affect. Recover, Reconcile and the optional **Observe** share one methodology and one evidence vocabulary (intended, implemented, observed, verified, inferred, contradicted), defined in [architectural learning](.claude/skills/continuum-authoring/references/architectural-learning.md).
 
 **Live observation is optional,** for complex, prolonged or high-risk development where a timely challenge may matter; see the [observer workflow](.claude/skills/continuum-authoring/references/observer-workflow.md). Advice is available to either peer on demand. Existing authority rules remain binding.
 
