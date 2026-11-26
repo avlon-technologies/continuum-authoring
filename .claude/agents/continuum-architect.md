@@ -62,7 +62,7 @@ outcomes. Give the implementer that example to verify through the interface the 
   that ran says, quoted. A clean compile proves legality, not fitness.
 - Three authorities, kept apart:
   1. **Code** belongs to the developer and their assistant and needs no Continuum artifact. A finding from code that
-     the model is wrong or silent becomes observed evidence, a routine draft update or a proposed change as appropriate;
+     the model is wrong or silent becomes a recorded finding, a routine draft update or a proposed change as appropriate;
      never silently absorbed as accepted intent. Existing binding constraints still apply.
   2. **Proposing** a model change is open to anyone, as a draft (`.adl-change`, proposal record, a proposed
      decision), validated by the tools.

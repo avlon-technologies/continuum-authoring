@@ -10,7 +10,7 @@ Part of the [continuum-authoring skill](../SKILL.md). Strategic direction: [Visi
 | **Reconcile** (§3) | the existing model, its decisions and its pinned implementation checkpoint | the meaningful changes since the checkpoint and everything they affect: source, tests, dependencies, callers | at each later change |
 | **Observe** (optional, `observer-workflow.md`) | the checkpoint, during development | each batch of commits as it lands; intervenes on consequential issues | complex, prolonged or high-risk development |
 
-All three read the implementation, its tests and its meaningful commits, re-establish every inherited claim in the code, keep the evidence kinds (§4) apart, and end in review (§5) and preservation (§6). An Observer's record is an input to recovery or reconciliation, never a substitute.
+All three read the implementation, its tests and its meaningful commits, re-establish in the code every inherited claim the work touches or relies on, keep the evidence kinds (§4) apart, and end in review (§5) and preservation (§6). An Observer's record is an input to recovery or reconciliation, never a substitute.
 
 **Three things are called reconciliation.** *Architect reconciliation* is the mode above: it evolves the model's understanding from implementation evidence. *Guard drift reconciliation* (`reconcile-architecture`) is the governed disposition of an adopted package's drift evidence; the semantic draft it needs comes from Architect reconciliation. *Cross-repository reconciliation* combines several repositories' recoveries into one ecosystem model; it is a workspace practice, not a skill.
 
@@ -41,7 +41,7 @@ All three read the implementation, its tests and its meaningful commits, re-esta
 ## 3. Reconcile: evolve the model from its checkpoint
 
 Your starting understanding is the existing model, its pinned implementation commit (the `evidence.json` anchor, the ledger's verified-against revision, or the base recorded in §6), the recorded decisions and the established constraints. Do not rediscover the whole architecture; do read whatever source the change affects.
-1. **Establish the comparison:** `continuum evidence check --anchored-at <target>` lists every file changed since the anchor and every citation whose code moved; `repository-history.md` covers ancestry, divergence and a missing pin.
+1. **Establish the comparison:** `continuum evidence check --anchored-at <target>` lists every file changed since the anchor and every citation whose code moved; with only a recorded base and no anchor yet, `git diff --find-renames <base> <target>`. `repository-history.md` covers ancestry, divergence and a missing pin.
 2. **Examine the meaningful changes since the checkpoint,** in order: the commits and their diffs, the changed source, its tests, and changed dependencies. Follow changed paths into unchanged callers, consumers and tests: unchanged bytes are not unchanged meaning. Give every changed implementation file a disposition (read, diff, or not architectural and why).
 3. **Decide the architectural implication** of each change. Did an owner, boundary, dependency, contract, invariant or promise change? Which identities continue? What must a future change preserve? If only implementation detail changed, record that and leave the model as it stands.
 4. **Reconcile the model as a change** (`change-architecture`: an `.adl-change` against the compiled base, with `apply(A, Δ) = B` proved), never as a rewrite. On an adopted package, adoption goes through `reconcile-architecture`'s governed path.
