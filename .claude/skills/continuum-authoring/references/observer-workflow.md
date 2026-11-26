@@ -4,7 +4,7 @@ Part of the [continuum-authoring skill](../SKILL.md). Strategic direction: [Visi
 
 ## 10. Observer workflow
 
-Observation is an **optional** mode, for complex, prolonged or high-risk development where a timely independent challenge may matter. The default is to learn the architecture after development, or since the last checkpoint ([`architectural-learning.md`](architectural-learning.md)). The two are complementary: an Observer's record is an input to that recovery, never a substitute for it. Observation does not reliably produce better software or models. It helps only when a challenge lands before delivery, which needs a developer that works in more than one commit.
+Observation is an **optional** mode, for complex, prolonged or high-risk development where a timely independent challenge may matter. The default is to learn the architecture after development, or since the last checkpoint ([`architectural-learning.md`](architectural-learning.md)). The two are complementary: an Observer's record is an input to that recovery, never a substitute for it. Observation does not reliably produce better software or models. In the experiments it helped where a challenge landed before delivery, which needs a developer that works in more than one commit.
 
 The developer owns application implementation, tests and reversible choices; the Architect owns routine architecture artifact authorship within applicable authority. Neither supervises the other. Advice is not permission. Do not gate reversible work or require check-ins, consultation, a complete model, or a development package before implementation. A capable developer may complete the entire implementation without consulting you.
 

@@ -11,12 +11,13 @@ Live observation during development (`observer-workflow.md`) is an optional mode
 ## 1. The default workflow
 
 1. **Vision and constraints.** The product vision and its consequential architectural constraints are written down before development. Accepted intent is the yardstick, not your preference.
-2. **The Developer builds autonomously.** Do not gate, interrupt or require check-ins. Encourage meaningful commits: one coherent step each, with a body that states what changed, why, and any consequential choice and the alternative it replaced. The history is your richest record of rationale.
-3. **You learn the architecture** from the vision, the source structure, the implementation logic, the tests (run, not only read), the complete meaningful commit history, and any decision records. Synthesize why the structure is as it is, and which decisions and abandoned alternatives shaped it, across the meaningful commits; never merely translate the final source into semantic constructs. Use §2 for a first model, §3 for a change.
-4. **You produce or reconcile the model** (§4).
-5. **A fresh reviewer reviews it independently** (§5).
-6. **You resolve consequential findings,** or disclose them explicitly as unresolved.
-7. **You preserve the understanding** for the next change (§6).
+2. **The Developer builds autonomously.** Do not gate, interrupt or require check-ins.
+3. **Meaningful commits.** Encourage them: one coherent step each, with a body that states what changed, why, and any consequential choice and the alternative it replaced. The history is your richest record of rationale.
+4. **You learn the architecture** from the vision, the source structure, the implementation logic, the tests (run, not only read), the complete meaningful commit history, and any decision records. Synthesize why the structure is as it is, and which decisions and abandoned alternatives shaped it, across the meaningful commits; never merely translate the final source into semantic constructs. Use §2 for a first model, §3 for a change.
+5. **You produce or reconcile the model** (§4).
+6. **A fresh reviewer reviews it independently** (§5): accuracy, completeness, depth, contradictions, omissions and unsupported assertions.
+7. **You resolve consequential findings,** or disclose them explicitly as unresolved.
+8. **You preserve the understanding** for the next change (§6).
 
 ## 2. A first model: understand, then consult, then author
 
@@ -30,7 +31,7 @@ Live observation during development (`observer-workflow.md`) is an optional mode
   - invariants and failure modes
   - the defects you established, with their evidence
   - the questions you could not settle
-- Commit these notes before Pass 2. Conclusions reached before you read anyone else's are the check on inherited error.
+- Record these notes before Pass 2: commit them where you have a branch to write to, otherwise keep them in your working record with the time. Conclusions reached before you read anyone else's are the check on inherited error.
 
 **Pass 2: synthesize the history and the records.** Follow the `continuum` skill's `repository-history.md`. Read the meaningful commits in order, and any decision record or observation record. Work out:
 - how the consequential boundaries, owners and promises emerged
@@ -75,7 +76,7 @@ Your starting understanding is the existing model, its pinned implementation com
 
 ## 5. Independent review and resolution
 
-When the model will be relied on, have it reviewed by one fresh reviewer, on a different model where one is available.
+When the model will be relied on, have it reviewed by one fresh reviewer, on a different model where one is available. Launch it yourself as a fresh subagent, or, inside an orchestrated build, ask the calling session to launch it.
 - **Give the reviewer:** the code at the target, the vision, the model and records, and the test commands. Do not give it your conclusions about them.
 - **It reports** numbered findings with severity and `file:line` evidence:
   - contradictions between the model and the code
@@ -99,4 +100,4 @@ Then anchor the checkpoint at the target in a clean LF checkout. The next change
 
 ## What the evidence does and does not show
 
-In the 2026 build-workflow experiments (continuum-architecture `plans/build-workflow-value/RESULTS.md`), recovery followed by independent review and resolution was the stage that most reliably established defects and produced the architecture record. Live observation helped where a challenge landed before delivery on a multi-commit build. Neither observation nor extra Developer self-review was shown to produce better software than this default. The evidence covers a few small products, and Developer and evaluator variability were large. It shows no workflow to be universally superior, and no workflow to be equivalent to another.
+In the 2026 build-workflow experiments (continuum-architecture `plans/build-workflow-value/RESULTS.md`), recovery followed by independent review and resolution was the stage that most reliably established defects and produced the architecture record. Live observation helped where a challenge landed before delivery on a multi-commit build. Neither observation nor extra Developer self-review was shown to produce better software than this default. The evidence covers a few small products. Its disclosed limitations include large Developer and evaluator variability, unequal self-review budgets, a freeze-rule interpretation, and tooling versions that changed during one run (see that file). It shows no workflow to be universally superior, and no workflow to be equivalent to another.
