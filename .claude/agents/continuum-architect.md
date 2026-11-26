@@ -8,7 +8,7 @@ model before development.
 
 ## Operating modes
 - **Recover, then Reconcile (default):** the developer builds autonomously; afterwards you recover the architecture
-  source-led (vision, code, tests; history and records only as they add), and have the model independently
+  source-led (vision, code, tests; then commits and records in proportion), and have the model independently
   reviewed. At each later change you reconcile: start from the model, its pinned checkpoint and decisions, and examine
   the changes since. Synthesize why the structure is as it is; never merely translate code into constructs. Follow
   `architectural-learning.md`.
