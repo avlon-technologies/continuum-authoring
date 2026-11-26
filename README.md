@@ -1,14 +1,21 @@
 # Continuum Authoring
 
-A Claude Code architecture partner that works with you to **discover, preserve and evolve the architectural intent** of a product idea, a proposed change or an existing codebase. It holds an architectural conversation, challenges questionable choices, and records the decisions that matter in Continuum artifacts: a compiled architecture model, a business model where it helps, technology bindings, decisions, principles and grounded diagrams. Architecture intent is the objective; the artifacts are its representation. Its always-loaded instructions are small; the Continuum skills and authoring references load when the work needs them. During development it acts as an independent observer, maintains the model incrementally, and advises either peer on demand.
+A Claude Code architecture partner that works with you to **discover, preserve and evolve the architectural intent** of a product idea, a proposed change or an existing codebase. It holds an architectural conversation, challenges questionable choices, and records the decisions that matter in Continuum artifacts: a compiled architecture model, a business model where it helps, technology bindings, decisions, principles and grounded diagrams. Architecture intent is the objective; the artifacts are its representation. Its always-loaded instructions are small; the Continuum skills and authoring references load when the work needs them. By default it learns the architecture after development, from code, tests and meaningful commit history, and reconciles it at each later change. It can also observe development live, and it advises either peer on demand.
 
 When you explicitly ask for it, the same agent produces a **development-ready Continuum package** instead: complete bindings, executable acceptance scenarios, a verified diagram set and a built, checked package, ready to hand to a developer or coding agent.
 
 This repository is the authoring framework. It does not implement your product.
 
-## Observer, advisor and direct authoring
+## Recovery, reconciliation, observation and direct authoring
 
-Observer is the default during development. The developer builds independently; the Architect inspects available revisions and maintains consequential architecture knowledge without requiring consultations, mandatory checkpoints or a complete upfront model. Advice is available to either peer on demand. Existing authority rules remain binding. See the [observer workflow](.claude/skills/continuum-authoring/references/observer-workflow.md).
+**The default is learning after development.** The developer builds autonomously and commits meaningfully. Afterwards the Architect:
+1. learns the architecture from the vision, the code and tests, the meaningful commit history and the decision records;
+2. produces or reconciles the model;
+3. has it independently reviewed, and resolves or discloses the findings.
+
+For existing software, the model and its pinned implementation commit are the starting point, and the Architect reconciles the meaningful changes since. See [architectural learning](.claude/skills/continuum-authoring/references/architectural-learning.md).
+
+**Live observation is optional,** for complex, prolonged or high-risk development where a timely challenge may matter; see the [observer workflow](.claude/skills/continuum-authoring/references/observer-workflow.md). Advice is available to either peer on demand. Existing authority rules remain binding.
 
 ## Two direct authoring modes
 
@@ -95,7 +102,7 @@ Intent-first conversations need only the Continuum MCP server, plus the Diagram 
      agents/continuum-architect.md              the partner (always loaded when you run it)
      skills/continuum-authoring/SKILL.md        the skill's entry point: when to load which reference
      skills/continuum-authoring/references/     authority and tools, package and lifecycle, intent-first,
-                                                artifacts, diagrams, development-ready, failures, observer-workflow
+                                                artifacts, architectural-learning, diagrams, development-ready, failures, observer-workflow
    ```
 
    **Primary path: `continuum install`.** The Continuum project kit carries this agent and this skill, together with the Continuum skills the partner loads on demand (`understand-architecture`, `author-architecture`, `change-architecture`, `recover-architecture`, `reconcile-architecture`, `implement-against-architecture`, `development-package`, `continuum-diagram`). It copies them **verbatim from a pinned commit of this repository**, so an installed file is byte-identical to the file here at that commit, and `continuum update` replaces it safely. The kit release that carries them is the next one; until it is published, use the fallback.
