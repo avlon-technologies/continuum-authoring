@@ -2,15 +2,15 @@
 
 Part of the [continuum-authoring skill](../SKILL.md). Strategic direction: [Vision V5](https://github.com/avlon-technologies/continuum-architecture/blob/main/VISION-V5.md). Existing normative semantics and authority rules retain precedence. This file is the authoritative description of the default development workflow, the roles in it, the architectural learning methodology and the evidence kinds (§4).
 
-**One methodology, three modes.** They differ in starting knowledge and investigation scope, never in rigour:
+**One methodology, three modes.** The architectural reasoning is the same; how knowledge is acquired differs. **Recovery is source-led. Reconciliation is change-led. Observation is event-led.** The modes differ in starting knowledge and investigation scope, never in rigour:
 
 | Mode | Starts from | Investigates | When |
 |---|---|---|---|
-| **Recover** (§2) | no model, or none you can rely on | the whole implementation at the target, then its history | after a new product is built; adopting existing software |
+| **Recover** (§2) | no model, or none you can rely on | the current implementation at the target, or a bounded part of it; history only in proportion (§2) | after a new product is built; adopting existing software |
 | **Reconcile** (§3) | the existing model, its decisions and its pinned implementation checkpoint | the meaningful changes since the checkpoint and everything they affect: source, tests, dependencies, callers | at each later change |
 | **Observe** (optional, `observer-workflow.md`) | the checkpoint, during development | each batch of commits as it lands; intervenes on consequential issues | complex, prolonged or high-risk development |
 
-All three read the implementation, its tests and its meaningful commits, re-establish in the code every inherited claim the work touches or relies on, keep the evidence kinds (§4) apart, and end in review (§5) and preservation (§6). An Observer's record is an input to recovery or reconciliation, never a substitute.
+All three read the implementation and its tests, consult history only while it adds understanding, re-establish in the code every inherited claim the work touches or relies on, keep the evidence kinds (§4) apart, and end in review (§5) and preservation (§6). An Observer's record is an input to recovery or reconciliation, never a substitute.
 
 **Three things are called reconciliation.** *Architect reconciliation* is the mode above: it evolves the model's understanding from implementation evidence. *Guard drift reconciliation* (`reconcile-architecture`) is the governed disposition of an adopted package's drift evidence; the semantic draft it needs comes from Architect reconciliation. *Cross-repository reconciliation* combines several repositories' recoveries into one ecosystem model; it is a workspace practice, not a skill.
 
@@ -19,7 +19,7 @@ All three read the implementation, its tests and its meaningful commits, re-esta
 1. **Vision and constraints.** The product vision and its consequential architectural constraints are written down before development. Accepted intent is the yardstick, not your preference.
 2. **The Developer builds autonomously:** code, tests, reversible engineering choices. It owns no Continuum artifact and waits for no one. Do not gate, interrupt or require check-ins.
 3. **Meaningful commits.** Encourage them: one coherent step each, with a body that states what changed, why, and any consequential choice and the alternative it replaced. The history is your richest record of rationale.
-4. **You, the Architect, learn the architecture** from the vision, the source structure and dependencies, component responsibilities and boundaries, the implementation logic, its invariants, limits and failure modes, the tests (run, not only read), the complete meaningful commit history, and any decision records. Ask the Developer only when something material cannot be settled from evidence. Synthesize why the structure is as it is, and which decisions and abandoned alternatives shaped it; never merely translate the final source into ADL or BDL. Recover (§2) for a first model, Reconcile (§3) for a change.
+4. **You, the Architect, learn the architecture** from the vision, the source structure and dependencies, component responsibilities and boundaries, the implementation logic, its invariants, limits and failure modes, the tests (run, not only read), the meaningful commit history in proportion to what it adds (§2), and any decision records. Ask the Developer only when something material cannot be settled from evidence. Synthesize why the structure is as it is, and which decisions and abandoned alternatives shaped it; never merely translate the final source into ADL or BDL. Recover (§2) for a first model, Reconcile (§3) for a change.
 5. **You produce or reconcile the model** (§4).
 6. **A fresh reviewer reviews it independently** (§5): accuracy, completeness, depth, contradictions, omissions and unsupported assertions.
 7. **You resolve consequential findings,** or disclose them explicitly as unresolved.
@@ -28,19 +28,28 @@ All three read the implementation, its tests and its meaningful commits, re-esta
 ## 2. Recover: understand, then consult, then author
 
 **Pass 1: the final implementation, on its own.**
-- Read the vision, the acceptance scenarios, and the source and tests at the target commit. Run the tests and scenarios.
+- Read the vision or other accepted intent, any acceptance scenarios, and at the target commit the source, tests, configuration, dependencies and any architecture documentation (a document is a claim to check, §4). Run the tests and scenarios.
 - Apply the `recover-architecture` semantic-reconstruction checks and its adversarial pass.
 - Read asynchronous seams, error paths and malformed-input paths with care. Where a promise depends on timing, malformed or hostile input, restart, or scale, write a small probe instead of trusting a reading.
 - Write down the components and who owns which state; the seams and their contracts, including what happens to in-flight work on cancel, replace and kill; invariants and failure modes; the defects you established, with their evidence; the questions you could not settle.
 - Record these notes before Pass 2: commit them where you have a branch to write to, otherwise keep them in your working record with the time. Conclusions reached before you read anyone else's are the check on inherited error.
 
-**Pass 2: synthesize the history and the records.** Read the meaningful commits in order, and any decision or observation record, with the `continuum` skill's `repository-history.md` (how to read the commits and what to record for each finding). Work out how the consequential boundaries, owners and promises emerged; which decisions shaped them, with their alternatives; which designs were abandoned, and why. Where history contradicts your Pass 1 notes, investigate until one is shown wrong, and record which.
+**Pass 2: consult the history and the records, in proportion.** The aim is to understand the current system, not to reconstruct how it was built. Use the `continuum` skill's `repository-history.md` for how to read commits and what to record.
+- **Newly developed software with meaningful commits** (a build's recovery): the history is short and written to carry rationale. Read the relevant commits directly, in order, with any decision or observation record. Work out how the consequential boundaries, owners and promises emerged, which decisions shaped them with their alternatives, and which designs were abandoned, and why.
+- **Existing or legacy software without a model:** consult history **selectively**, to answer questions Pass 1 left open. Those questions include an unexplained choice, a consequential decision, and why a boundary or owner is where it is. Do not traverse the history exhaustively. Find the commits that bear on a question (`git log -S`, `-L`, `-- <path>`, blame on the lines that matter), and stop when they stop adding understanding.
+- **A past decision binds nothing by being past.** Re-establish it in the current code before the model relies on it. Record rationale as **established** (stated in a commit, record or document, and consistent with the code), **inferred**, or **unknown**. Never present inferred rationale as established.
+- Where history contradicts your Pass 1 notes, investigate until one is shown wrong, and record which.
 
 **Pass 3: author** (§4).
 
+**Scale the depth, and bound the scope.** Investigate in proportion to architectural significance: trust boundaries, owned state, consequential promises and cross-component seams get probes and history; routine code gets a reading. For a large system, recover progressively, one bounded subsystem at a time:
+- Name the subsystem, its entry points and the boundaries it shares with the rest.
+- Model the parts outside the subsystem only as far as its seams need, and record them as **not yet recovered**. They are a coverage gap, not an absence.
+- Each later subsystem extends the same model. A part already recovered is reconciled (§3), not recovered again.
+
 ## 3. Reconcile: evolve the model from its checkpoint
 
-Your starting understanding is the existing model, its pinned implementation commit (the `evidence.json` anchor, the ledger's verified-against revision, or the base recorded in §6), the recorded decisions and the established constraints. Do not rediscover the whole architecture; do read whatever source the change affects.
+**Recovery is an initial investment.** Once the model exists, every later change is reconciled from its checkpoint: you investigate the change and what it affects, never the whole codebase again. Your starting understanding is the existing model, its pinned implementation commit (the `evidence.json` anchor, the ledger's verified-against revision, or the base recorded in §6), the recorded decisions and the established constraints. Do not rediscover the whole architecture; do read whatever source the change affects.
 1. **Establish the comparison:** `continuum evidence check --anchored-at <target>` lists every file changed since the anchor and every citation whose code moved; with only a recorded base and no anchor yet, `git diff --find-renames <base> <target>`. `repository-history.md` covers ancestry, divergence and a missing pin.
 2. **Examine the meaningful changes since the checkpoint,** in order: the commits and their diffs, the changed source, its tests, and changed dependencies. Follow changed paths into unchanged callers, consumers and tests: unchanged bytes are not unchanged meaning. Give every changed implementation file a disposition (read, diff, or not architectural and why).
 3. **Decide the architectural implication** of each change. Did an owner, boundary, dependency, contract, invariant or promise change? Which identities continue? What must a future change preserve? If only implementation detail changed, record that and leave the model as it stands.
