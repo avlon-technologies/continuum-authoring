@@ -10,8 +10,8 @@ Reference material for the `continuum-architect` partner, or anyone authoring Co
 |---|---|
 | [`references/authority-and-tools.md`](references/authority-and-tools.md) | you need the ground rules in full (the three authorities, the lifecycle and Host decision acts that are the human's, reading verdicts), the MCP and CLI tool routes and what each can verify, or where a piece of Continuum knowledge lives |
 | [`references/package-and-lifecycle.md`](references/package-and-lifecycle.md) | a write touches `continuum/`: the package layout, an adopted package versus a proposed change, the proposal record, lifecycle and building |
-| [`references/architectural-learning.md`](references/architectural-learning.md) | the default: learning architecture after development or since a checkpoint; review |
-| [`references/observer-workflow.md`](references/observer-workflow.md) | optional live observation of development |
+| [`references/architectural-learning.md`](references/architectural-learning.md) | the default: Recover, Reconcile, evidence kinds, review, checkpoint |
+| [`references/observer-workflow.md`](references/observer-workflow.md) | Observe: the optional mode |
 | [`references/intent-first.md`](references/intent-first.md) | running or recording an intent-first session in detail: choosing the mode, the conversation steps, what preserves which intent, evidence classes, and the session-outcome shape of `GOAL.md`, `HANDOFF.md` or a proposal record |
 | [`references/artifacts.md`](references/artifacts.md) | authoring an artifact: ADL (new, existing, change, recover, deriving a change by diff), BDL, Technology Bindings and claims, acceptance scenarios, research |
 | [`references/diagrams.md`](references/diagrams.md) | a diagram is part of this protocol's output: snapshots, labels, saving, a final set (the procedure itself is the `continuum-diagram` skill) |

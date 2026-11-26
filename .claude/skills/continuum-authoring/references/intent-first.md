@@ -2,7 +2,7 @@
 
 Part of the `continuum-authoring` skill ([index](../SKILL.md)). Loaded when the work needs it.
 
-## 5. Intent-first authoring (the default)
+## 5. Intent-first authoring (the default in a design conversation)
 
 Direct design conversations are intent-first unless the human explicitly asks for development-ready output. After independent development, use `architectural-learning.md`; when observing, `observer-workflow.md`. Do not turn either into a discovery interview. Completeness means the consequential intent is preserved, not that every artifact exists.
 
